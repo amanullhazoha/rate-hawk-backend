@@ -58,15 +58,15 @@ const userSignUp = async (req, res, next) => {
         }),
       );
 
-    const isExistByUserName = await User.findOne({ user_name });
+    // const isExistByUserName = await User.findOne({ user_name });
 
-    if (isExistByUserName)
-      return res.status(400).json(
-        API_response({
-          status: 400,
-          message: "User already exist by username.",
-        }),
-      );
+    // if (isExistByUserName)
+    //   return res.status(400).json(
+    //     API_response({
+    //       status: 400,
+    //       message: "User already exist by username.",
+    //     }),
+    //   );
 
     const hashedPassword = await hashPassword(password);
 
@@ -175,15 +175,15 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
-const resetPassword = async (req, res) => {
+const resetPassword = async (req, res, next) => {
   try {
     const { email, token, password } = req.body;
 
     const user = await User.findOne({ email });
 
-    if (!user) return res.status(404).send("Invalid credential");
+    if (!user) return res.status(404).send("Invalid user credential");
 
-    const verifyToken = await VerifyToken.findOne({ where: { id: token } });
+    const verifyToken = await VerifyToken.findOne({ _id: token });
 
     if (!verifyToken) return res.status(404).send("Invalid credential");
 
@@ -205,6 +205,8 @@ const resetPassword = async (req, res) => {
     res.status(200).send("Password reset successfully.");
   } catch (error) {
     console.log(error);
+
+    next(error);
   }
 };
 

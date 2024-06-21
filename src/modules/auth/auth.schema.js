@@ -19,9 +19,8 @@ const forgotPasswordSchema = object().shape({
 });
 
 const resetPasswordSchema = object().shape({
+  token: string().required("Token is required."),
   email: string().required("User email is required."),
-  otp_id: string().required("User OTP ID is required."),
-  otp_code: string().required("User OTP code is required."),
   password: string().required("User password is required."),
 });
 
