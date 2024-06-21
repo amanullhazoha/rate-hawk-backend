@@ -22,7 +22,8 @@ module.exports = () => {
         jwtFromRequest: cookieExtractor,
       },
       (payload, done) => {
-        User.findOne({ where: { id: payload.id } }).then((user) => {
+        console.log(payload, "hi");
+        User.findOne({ _id: payload.id }).then((user) => {
           if (user) return done(null, user);
 
           return done(null, false);

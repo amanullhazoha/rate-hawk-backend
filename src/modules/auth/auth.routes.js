@@ -1,3 +1,4 @@
+const passport = require("passport");
 const validate = require("../core/middlewares/validate.middleware");
 const {
   userLoginSchema,
@@ -31,4 +32,34 @@ module.exports = (app) => {
   );
 
   app.get("/api/v1/public/email-verify", userEmailVerify);
+
+  app.get(
+    "/api/v1/public/user/google-login",
+    (req, res) => {
+      res.status(200).send("user google login successfully");
+    },
+    // passport.authenticate("google", {
+    //   scope: ["profile", "email"],
+    // }),
+  );
+  app.get(
+    "/api/v1/public/user/google-callback",
+    (req, res) => {
+      res.status(200).send("google login callback successfully");
+    },
+    // passport.authenticate("google", {
+    //   failureRedirect: process.env.GOOGLE_OAUTH_FAILURE_REDIRECT,
+    // }),
+    // userGoogleLoginCallBack,
+  );
+
+  app.get(
+    "/api/v1/public/user/facebook-login",
+    (req, res) => {
+      res.status(200).send("user facebook login successfully");
+    },
+    // passport.authenticate("google", {
+    //   scope: ["profile", "email"],
+    // }),
+  );
 };

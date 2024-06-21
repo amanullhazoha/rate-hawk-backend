@@ -26,10 +26,10 @@ const userLogin = async (req, res, next) => {
 
     const access_token = generateAccessToken(user);
 
-    // res.cookie("access_token", access_token, {
-    //   httpOnly: true,
-    //   signed: true,
-    // });
+    res.cookie("access_token", access_token, {
+      httpOnly: true,
+      signed: true,
+    });
 
     res.status(200).send({
       access_token,
@@ -190,8 +190,10 @@ const resetPassword = async (req, res, next) => {
     if (new Date(verifyToken.expire_date).getTime() < new Date().getTime())
       return res.status(404).send("OTP code time expire.");
 
+    const hashedPassword = await hashPassword(password);
+
     const userData = {
-      password,
+      password: hashedPassword,
     };
 
     Object.keys(userData).forEach((key) => {
