@@ -7,10 +7,6 @@ const UserStrategy = require(path.join(
   process.cwd(),
   "src/modules/core/middlewares/authenticate",
 ));
-const authorize = require(path.join(
-  process.cwd(),
-  "src/modules/core/middlewares/authorize",
-));
 const {
   oderSchema,
   preOderSchema,
