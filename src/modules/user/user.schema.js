@@ -1,50 +1,44 @@
 const { object, string, array } = require("yup");
 
 const createUserSchema = object().shape({
-  profile_image: string(),
-  email: string().required("User email is required."),
+  user_name: string().required("User name is required."),
+  email: string()
+    .min(3, "Email at least 3 character.")
+    .max(100, "Email at most 100 character.")
+    .required("User email is required."),
+  password: string()
+    .min(8, "Password at least 8 character.")
+    .max(100, "Password at most 100 character.")
+    .required("User password is required."),
   gender: string().required("User gender is required."),
-  mobile: string().required("User mobile is required."),
-  password: string().required("User password is required."),
-  full_name: string().required("User full name is required."),
-  profile_id: string().required("User profile ID is required."),
-  dateOfBirth: string().required("User date of birth is required."),
+  address: string()
+    .min(5, "Address at least 5 character.")
+    .max(200, "Address at most 200 character.")
+    .required("User password is required."),
+  phone: string(),
+  bath_date: string(),
+  about_you: string()
+    .min(5, "About at least 5 character.")
+    .max(500, "About at most 500 character."),
+  role: string().oneOf(["admin", "user"]).required("Role is required."),
 });
 
 const updaterUserSchema = object().shape({
-  profile_image: string(),
-  email: string().required("User email is required."),
-  gender: string().required("User gender is required."),
-  mobile: string().required("User mobile is required."),
-  password: string().required("User password is required."),
-  full_name: string().required("User full name is required."),
-  profile_id: string().required("User profile ID is required."),
-  dateOfBirth: string().required("User date of birth is required."),
-});
-
-const userSignupSchema = object().shape({
-  email: string().required("User email is required."),
-  gender: string().required("User gender is required."),
-  mobile: string().required("User mobile is required."),
-  password: string().required("User password is required."),
-  full_name: string().required("User full name is required."),
-  dateOfBirth: string().required("User date of birth is required."),
-});
-
-const userLoginSchema = object().shape({
-  email: string().required("User email is required."),
-  password: string().required("User password is required."),
-});
-
-const forgotPasswordSchema = object().shape({
-  email: string().required("User email is required."),
-});
-
-const resetPasswordSchema = object().shape({
-  email: string().required("User email is required."),
-  otp_id: string().required("User OTP ID is required."),
-  otp_code: string().required("User OTP code is required."),
-  password: string().required("User password is required."),
+  user_name: string().required("User name is required."),
+  gender: string()
+    .oneOf(["male", "female"])
+    .required("User gender is required."),
+  address: string()
+    .min(5, "Address at least 5 character.")
+    .max(200, "Address at most 200 character.")
+    .required("User password is required."),
+  phone: string(),
+  bath_date: string(),
+  about_you: string()
+    .min(5, "About at least 5 character.")
+    .max(500, "About at most 500 character.")
+    .required("About is required."),
+  role: string().oneOf(["admin", "user"]).required("Role is required."),
 });
 
 const changePasswordSchema = object().shape({
@@ -53,18 +47,25 @@ const changePasswordSchema = object().shape({
 });
 
 const updateLoggedInUserSchema = object().shape({
-  profile_image: string(),
-  gender: string().required("User gender is required."),
-  mobile: string().required("User mobile is required."),
-  full_name: string().required("User full name is required."),
-  dateOfBirth: string().required("User date of birth is required."),
+  user_name: string().required("User name is required."),
+  gender: string()
+    .oneOf(["male", "female"])
+    .required("User gender is required."),
+  address: string()
+    .min(5, "Address at least 5 character.")
+    .max(200, "Address at most 200 character.")
+    .required("Address is required."),
+  phone: string(),
+  bath_date: string(),
+  about_you: string()
+    .min(5, "About at least 5 character.")
+    .max(500, "About at most 500 character.")
+    .required("About is required."),
 });
 
-module.exports.userLoginSchema = userLoginSchema;
-module.exports.userSignupSchema = userSignupSchema;
-module.exports.createUserSchema = createUserSchema;
-module.exports.updaterUserSchema = updaterUserSchema;
-module.exports.resetPasswordSchema = resetPasswordSchema;
-module.exports.forgotPasswordSchema = forgotPasswordSchema;
-module.exports.changePasswordSchema = changePasswordSchema;
-module.exports.updateLoggedInUserSchema = updateLoggedInUserSchema;
+module.exports = {
+  createUserSchema,
+  updaterUserSchema,
+  changePasswordSchema,
+  updateLoggedInUserSchema,
+};
