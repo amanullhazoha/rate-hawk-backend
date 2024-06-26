@@ -31,15 +31,11 @@ module.exports = (app) => {
 
   app
     .route("/api/v1/secured/search/hotel-by-region")
-    .post(
-      UserStrategy,
-      validate(hotelSearchByRegionSchema),
-      hotelSearchByRegion,
-    );
+    .post(validate(hotelSearchByRegionSchema), hotelSearchByRegion);
 
   app
     .route("/api/v1/secured/search/hotel-info")
-    .post(UserStrategy, validate(hotelInfoSchema), hotelInfo);
+    .post(validate(hotelInfoSchema), hotelInfo);
 
   app
     .route("/api/v1/secured/search/hotel-hash-id")

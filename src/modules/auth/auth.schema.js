@@ -6,7 +6,7 @@ const userSignupSchema = object().shape({
   password: string().required("User password is required."),
   is_agree: boolean()
     .isTrue("User can agree to term and conditions.")
-    .required("User mobile is required."),
+    .required("Is agree required."),
 });
 
 const userLoginSchema = object().shape({

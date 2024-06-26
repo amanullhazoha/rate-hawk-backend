@@ -1,4 +1,5 @@
 const User = require("../user/user.model");
+const { badRequest } = require("../../config/lib/error");
 const VerifyToken = require("../user/verify_token.model");
 const { API_response } = require("../../config/lib/response");
 const nodemailer = require("../../config/emailService/config");
@@ -18,11 +19,11 @@ const userLogin = async (req, res, next) => {
 
     const user = await User.findOne({ email });
 
-    if (!user) return res.status(400).send("Invalid credentials.");
+    if (!user) throw badRequest("Invalid credentials.");
 
     const match = await comparePassword(password, user.password);
 
-    if (!match) return res.status(400).send("Invalid credentials.");
+    if (!match) throw badRequest("Invalid credentials.");
 
     const access_token = generateAccessToken(user);
 
@@ -138,7 +139,7 @@ const forgotPassword = async (req, res, next) => {
 
     const user = await User.findOne({ email });
 
-    if (!user) return res.status(404).send("User not found by ID.");
+    if (!user) throw badRequest("User not found by ID.");
 
     let currentDate = new Date();
     let expire_date = new Date(currentDate.getTime() + 5 * 60000);
@@ -181,14 +182,14 @@ const resetPassword = async (req, res, next) => {
 
     const user = await User.findOne({ email });
 
-    if (!user) return res.status(404).send("Invalid user credential");
+    if (!user) throw badRequest("Invalid user credential.");
 
     const verifyToken = await VerifyToken.findOne({ _id: token });
 
-    if (!verifyToken) return res.status(404).send("Invalid credential");
+    if (!verifyToken) throw badRequest("Invalid credential");
 
     if (new Date(verifyToken.expire_date).getTime() < new Date().getTime())
-      return res.status(404).send("OTP code time expire.");
+      throw badRequest("OTP code time expire.");
 
     const hashedPassword = await hashPassword(password);
 
@@ -204,7 +205,14 @@ const resetPassword = async (req, res, next) => {
 
     await VerifyToken.deleteOne({ created_by: user.id });
 
-    res.status(200).send("Password reset successfully.");
+    const response = {
+      code: 200,
+      message: "Password reset successfully.",
+      data: user,
+      links: req.path,
+    };
+
+    res.status(200).json(response);
   } catch (error) {
     console.log(error);
 
