@@ -25,34 +25,17 @@ module.exports = async () => {
 
   // app.use(cors(corsOptions));
 
-  const allowedOrigins = [process.env.FRONTEND_BASE_URL];
+  const allowedOrigins = process.env.FRONTEND_BASE_URL;
 
   console.log(allowedOrigins);
 
   const corsOptions = {
-    origin: function (origin, callback) {
-      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    origin: allowedOrigins,
+    methods: "GET,POST,PUT,DELETE",
     allowedHeaders: "Content-Type,Authorization",
-    credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
   };
 
   app.use(cors(corsOptions));
-
-  app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", process.env.FRONTEND_BASE_URL);
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.header("Access-Control-Allow-Credentials", "true");
-    next();
-  });
 
   app.use(express.json());
   app.use(cookieParser(process.env.COOKIE_PARSER_TOKEN));
