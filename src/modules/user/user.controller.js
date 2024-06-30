@@ -286,8 +286,16 @@ const deleteUserByID = async (req, res, next) => {
 
 const logout = (req, res) => {
   // res.clearCookie("access_token", { domain: "noblenames.co.uk" });
+
+  const response = {
+    code: 200,
+    message: "User password update successful",
+    data: "User logged out!",
+    links: req.path,
+  };
+
   res.clearCookie("access_token");
-  res.status(200).send("User logged out!");
+  res.status(200).json(response);
 };
 
 module.exports = {

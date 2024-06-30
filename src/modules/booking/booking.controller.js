@@ -2,8 +2,8 @@ const axios = require("axios");
 const Hotel = require("./hotel.model");
 const { badRequest } = require("../../config/lib/error");
 
-const username = "7731";
-const password = "ac8e2c78-9ce6-4673-8279-5bdb081b7966";
+const username = process.env.RATE_HAWK_USER_NAME;
+const password = process.env.RATE_HAWK_PASSWORD;
 
 const encodedCredentials = btoa(`${username}:${password}`);
 
