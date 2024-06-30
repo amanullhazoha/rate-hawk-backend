@@ -5,6 +5,8 @@ const { badRequest } = require("../../config/lib/error");
 const username = process.env.RATE_HAWK_USER_NAME;
 const password = process.env.RATE_HAWK_PASSWORD;
 
+console.log(username, "/", password);
+
 const encodedCredentials = btoa(`${username}:${password}`);
 
 const getHotelData = async (req, res, next) => {
