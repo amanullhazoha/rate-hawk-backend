@@ -16,17 +16,6 @@ module.exports = async () => {
 
   await connectDB();
 
-  app.use(express.json());
-  app.use(cookieParser(process.env.COOKIE_PARSER_TOKEN));
-  app.use(
-    session({
-      secret: "mySecret",
-      resave: false,
-      saveUninitialized: true,
-      cookie: { secure: false },
-    }),
-  );
-
   // const corsOptions = {
   //   credentials: true,
   //   origin: (origin, callback) => {
@@ -37,6 +26,8 @@ module.exports = async () => {
   // app.use(cors(corsOptions));
 
   const allowedOrigins = [process.env.FRONTEND_BASE_URL];
+
+  console.log(allowedOrigins);
 
   const corsOptions = {
     origin: function (origin, callback) {
@@ -62,6 +53,17 @@ module.exports = async () => {
     res.header("Access-Control-Allow-Credentials", "true");
     next();
   });
+
+  app.use(express.json());
+  app.use(cookieParser(process.env.COOKIE_PARSER_TOKEN));
+  app.use(
+    session({
+      secret: "mySecret",
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: false },
+    }),
+  );
 
   const globalConfig = config.getGlobalConfig();
 
