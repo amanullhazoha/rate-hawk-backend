@@ -18,6 +18,7 @@ const {
 const {
   hotelInfo,
   createOrder,
+  getHotelData,
   createPreBook,
   multiComplete,
   getHotelHashID,
@@ -27,7 +28,9 @@ const {
 module.exports = (app) => {
   app
     .route("/api/v1/secured/search/multi-complete")
-    .post(UserStrategy, validate(multiCompleteSchema), multiComplete);
+    .post(validate(multiCompleteSchema), multiComplete);
+
+  app.route("/api/v1/secured/search/hotel-data").post(getHotelData);
 
   app
     .route("/api/v1/secured/search/hotel-by-region")
@@ -39,7 +42,7 @@ module.exports = (app) => {
 
   app
     .route("/api/v1/secured/search/hotel-hash-id")
-    .post(UserStrategy, validate(hotelHashIDSchema), getHotelHashID);
+    .post(validate(hotelHashIDSchema), getHotelHashID);
 
   app
     .route("/api/v1/secured/order/create")
