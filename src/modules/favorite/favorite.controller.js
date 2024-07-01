@@ -64,11 +64,11 @@ const removeFavorite = async (req, res, next) => {
     const user_id = req.user.id;
     const id = req.params.id;
 
-    const isExist = await Favorite.findOne({ _id: id, user: user_id });
+    const isExist = await Favorite.findOne({ hotel_id: id, user: user_id });
 
     if (!isExist) throw badRequest("Favorite not found by this ID.");
 
-    const favorite = await Favorite.deleteOne({ _id: id });
+    const favorite = await Favorite.deleteOne({ _id: isExist._id });
 
     const response = {
       code: 200,
