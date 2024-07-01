@@ -238,6 +238,7 @@ const userGoogleLoginCallBack = async (req, res, next) => {
       secure: true,
       sameSite: "None",
       // domain: "noblenames.co.uk",
+      domain: process.env.FRONTEND_DOMAIN,
     });
 
     res.redirect(process.env.GOOGLE_OAUTH_SUCCESS_REDIRECT);
