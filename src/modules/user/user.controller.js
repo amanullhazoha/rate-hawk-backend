@@ -294,7 +294,7 @@ const logout = (req, res) => {
     links: req.path,
   };
 
-  res.clearCookie("access_token", accessToken, {
+  res.clearCookie("access_token", {
     httpOnly: true,
     signed: true,
     secure: true,
