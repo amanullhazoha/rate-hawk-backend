@@ -27,12 +27,11 @@ module.exports = async () => {
 
   const allowedOrigins = process.env.FRONTEND_BASE_URL;
 
-  console.log(allowedOrigins);
-
   const corsOptions = {
     origin: allowedOrigins,
     methods: "GET,POST,PUT,DELETE",
     allowedHeaders: "Content-Type,Authorization",
+    credentials: true,
   };
 
   app.use(cors(corsOptions));
