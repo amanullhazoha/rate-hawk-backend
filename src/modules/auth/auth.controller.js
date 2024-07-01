@@ -97,7 +97,7 @@ const userEmailVerify = async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.redirect("http://localhost:3000/signup");
+      return res.redirect(`${process.env.FRONTEND_BASE_URL}/signup`);
     }
 
     if (user.email_verify === "unverified") {
@@ -125,7 +125,7 @@ const userEmailVerify = async (req, res, next) => {
       });
     }
 
-    return res.redirect("http://localhost:3000");
+    return res.redirect(process.env.FRONTEND_BASE_URL);
   } catch (error) {
     console.log(error);
 
