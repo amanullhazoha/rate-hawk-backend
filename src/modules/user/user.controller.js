@@ -294,7 +294,14 @@ const logout = (req, res) => {
     links: req.path,
   };
 
-  res.clearCookie("access_token");
+  res.clearCookie("access_token", accessToken, {
+    httpOnly: true,
+    signed: true,
+    secure: true,
+    sameSite: "None",
+    domain: process.env.FRONTEND_DOMAIN,
+  });
+
   res.status(200).json(response);
 };
 
