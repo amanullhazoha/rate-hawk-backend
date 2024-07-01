@@ -6,7 +6,7 @@ module.exports = (email, full_name, token) => {
     html: `<div>
             <h1>Hi ${full_name}</h1>
             <p>Please reset your password</p>
-            <a href=${`http://localhost:3000/reset-password?email=${email}&token=${token}`}>Verify</a>
+            <a href=${`${process.env.FRONTEND_BASE_URL}/reset-password?email=${email}&token=${token}`}>Verify</a>
         </div>`,
   };
 };
