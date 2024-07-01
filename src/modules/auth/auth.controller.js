@@ -30,6 +30,9 @@ const userLogin = async (req, res, next) => {
     res.cookie("access_token", access_token, {
       httpOnly: true,
       signed: true,
+      secure: true,
+      sameSite: "None",
+      domain: process.env.FRONTEND_DOMAIN,
     });
 
     res.status(200).send({
@@ -122,6 +125,9 @@ const userEmailVerify = async (req, res, next) => {
       res.cookie("access_token", accessToken, {
         httpOnly: true,
         signed: true,
+        secure: true,
+        sameSite: "None",
+        domain: process.env.FRONTEND_DOMAIN,
       });
     }
 
@@ -237,7 +243,6 @@ const userGoogleLoginCallBack = async (req, res, next) => {
       signed: true,
       secure: true,
       sameSite: "None",
-      // domain: "noblenames.co.uk",
       domain: process.env.FRONTEND_DOMAIN,
     });
 
