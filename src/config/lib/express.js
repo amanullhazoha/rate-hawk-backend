@@ -25,12 +25,19 @@ module.exports = async () => {
 
   // app.use(cors(corsOptions));
 
-  const allowedOrigins = process.env.FRONTEND_BASE_URL;
+  const allowedOrigins = process.env.FRONTEND_BASE_URL.split(",");
 
   console.log(allowedOrigins);
 
   const corsOptions = {
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        console.error(`Origin not allowed by CORS: ${origin}`);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: "GET,POST,PUT,DELETE",
     allowedHeaders: "Content-Type,Authorization",
     credentials: true,
@@ -39,6 +46,9 @@ module.exports = async () => {
   app.use(cors(corsOptions));
 
   app.use(express.json());
+
+  app.options("*", cors(corsOptions));
+
   app.use(cookieParser(process.env.COOKIE_PARSER_TOKEN));
   app.use(
     session({
