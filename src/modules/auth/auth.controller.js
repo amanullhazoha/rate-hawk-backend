@@ -220,10 +220,37 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
+const userGoogleLoginCallBack = async (req, res, next) => {
+  try {
+    const user = req?.user;
+
+    const payload = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
+
+    const accessToken = generateAccessToken(payload);
+
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      signed: true,
+      secure: true,
+      sameSite: "None",
+      // domain: "noblenames.co.uk",
+    });
+
+    res.redirect(process.env.GOOGLE_OAUTH_SUCCESS_REDIRECT);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   userLogin,
   userSignUp,
   resetPassword,
   forgotPassword,
   userEmailVerify,
+  userGoogleLoginCallBack,
 };

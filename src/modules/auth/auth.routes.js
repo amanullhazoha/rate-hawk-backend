@@ -12,6 +12,7 @@ const {
   resetPassword,
   forgotPassword,
   userEmailVerify,
+  userGoogleLoginCallBack,
 } = require("./auth.controller");
 
 module.exports = (app) => {
@@ -34,23 +35,22 @@ module.exports = (app) => {
   app.get("/api/v1/public/email-verify", userEmailVerify);
 
   app.get(
-    "/api/v1/public/user/google-login",
+    "/api/v1/public/google-login",
+    passport.authenticate("google", {
+      access_type: "offline",
+      scope: ["profile", "email"],
+    }),
     (req, res) => {
       res.status(200).send("user google login successfully");
     },
-    // passport.authenticate("google", {
-    //   scope: ["profile", "email"],
-    // }),
   );
+
   app.get(
-    "/api/v1/public/user/google-callback",
-    (req, res) => {
-      res.status(200).send("google login callback successfully");
-    },
-    // passport.authenticate("google", {
-    //   failureRedirect: process.env.GOOGLE_OAUTH_FAILURE_REDIRECT,
-    // }),
-    // userGoogleLoginCallBack,
+    "/api/v1/public/google-callback",
+    passport.authenticate("google", {
+      failureRedirect: process.env.GOOGLE_OAUTH_FAILURE_REDIRECT,
+    }),
+    userGoogleLoginCallBack,
   );
 
   app.get(
