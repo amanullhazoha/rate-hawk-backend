@@ -4,7 +4,8 @@ module.exports = (options) => {
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_SENDER_HOST,
     port: process.env.EMAIL_SENDER_PORT,
-    secure: false,
+    secure: true,
+    tls: { rejectUnauthorized: false },
     auth: {
       user: process.env.EMAIL_SENDER_ACCOUNT,
       pass: process.env.EMAIL_SENDER_PASSWORD,
