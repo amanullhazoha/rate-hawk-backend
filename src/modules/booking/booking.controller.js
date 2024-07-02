@@ -5,8 +5,6 @@ const { badRequest } = require("../../config/lib/error");
 const username = process.env.RATE_HAWK_USER_NAME;
 const password = process.env.RATE_HAWK_PASSWORD;
 
-console.log(username, "/", password);
-
 const encodedCredentials = btoa(`${username}:${password}`);
 
 const getHotelData = async (req, res, next) => {
@@ -103,8 +101,6 @@ const multiComplete = async (req, res, next) => {
 };
 
 const hotelSearchByRegion = async (req, res, next) => {
-  console.log(req.body);
-
   try {
     const data = await axios.post(
       "https://api.worldota.net/api/b2b/v3/search/serp/region/",
@@ -130,7 +126,7 @@ const hotelSearchByRegion = async (req, res, next) => {
 
     res.status(200).send(response);
   } catch (error) {
-    // console.log(error);
+    console.log(error);
 
     next(error);
   }

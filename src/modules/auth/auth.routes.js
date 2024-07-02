@@ -13,6 +13,7 @@ const {
   forgotPassword,
   userEmailVerify,
   userGoogleLoginCallBack,
+  userFacebookLoginCallBack,
 } = require("./auth.controller");
 
 module.exports = (app) => {
@@ -54,12 +55,21 @@ module.exports = (app) => {
   );
 
   app.get(
-    "/api/v1/public/user/facebook-login",
+    "/api/v1/public/facebook-login",
+    passport.authenticate("facebook", {
+      access_type: "offline",
+      scope: ["profile", "email"],
+    }),
     (req, res) => {
-      res.status(200).send("user facebook login successfully");
+      res.status(200).send("User facebook login successfully");
     },
-    // passport.authenticate("google", {
-    //   scope: ["profile", "email"],
-    // }),
+  );
+
+  app.get(
+    "/api/v1/public/facebook-callback",
+    passport.authenticate("facebook", {
+      failureRedirect: process.env.GOOGLE_OAUTH_FAILURE_REDIRECT,
+    }),
+    userFacebookLoginCallBack,
   );
 };

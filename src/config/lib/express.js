@@ -16,18 +16,16 @@ module.exports = async () => {
 
   await connectDB();
 
-  // const corsOptions = {
-  //   credentials: true,
-  //   origin: (origin, callback) => {
-  //     return callback(null, true);
-  //   },
-  // };
-
-  // app.use(cors(corsOptions));
+  app.post(
+    "/webhook",
+    express.raw({ type: "application/json" }),
+    (req, res) => {
+      res.status(200).json({ data: "hi" });
+    },
+    // paymentController.webhook,
+  );
 
   const allowedOrigins = process.env.FRONTEND_BASE_URL.split(",");
-
-  console.log(allowedOrigins);
 
   const corsOptions = {
     origin: (origin, callback) => {

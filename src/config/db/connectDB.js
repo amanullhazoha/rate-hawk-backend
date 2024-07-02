@@ -7,7 +7,6 @@ connectionURL = connectionURL.replace(
   process.env.DATA_BASE_PASSWORD,
 );
 connectionURL = `${connectionURL}/${process.env.DB_NAME}?${process.env.DB_URL_QUERY}`;
-console.log("password", connectionURL);
 
 const connectDB = async () => {
   await mongoose.connect(connectionURL, {

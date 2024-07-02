@@ -5,9 +5,10 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const stripePaymentIntent = async (req, res, next) => {
   try {
     const product = {
-      name: "amanullha zoha",
-      description: "Zoha description",
-      amount: 140,
+      name: req.body.hotel_name,
+      amount: req.body.total_amount,
+      description: req.body.hotel_name,
+      currency: req.body.currency.toLowerCase(),
     };
 
     const session = await stripe.checkout.sessions.create({
@@ -16,7 +17,7 @@ const stripePaymentIntent = async (req, res, next) => {
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: product.currency,
             product_data: {
               name: product?.name,
               description: product?.description,
@@ -26,15 +27,10 @@ const stripePaymentIntent = async (req, res, next) => {
           quantity: 1,
         },
       ],
+      metadata: req.body,
       customer_email: `amanullhazoha3784@gmail.com`,
-      metadata: {
-        name: "amanullha zoha",
-        description: "Zoha description",
-        amount: 140,
-      },
-
-      success_url: `${process.env.FRONTEND_BASE_URL}/success`,
       cancel_url: `${process.env.FRONTEND_BASE_URL}/error`,
+      success_url: `${process.env.FRONTEND_BASE_URL}/success`,
     });
 
     // res.redirect(303, session.url);

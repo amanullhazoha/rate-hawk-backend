@@ -32,7 +32,7 @@ const userLogin = async (req, res, next) => {
       signed: true,
       secure: true,
       sameSite: "None",
-      domain: process.env.FRONTEND_DOMAIN,
+      // domain: process.env.FRONTEND_DOMAIN,
     });
 
     res.status(200).send({
@@ -252,6 +252,32 @@ const userGoogleLoginCallBack = async (req, res, next) => {
   }
 };
 
+const userFacebookLoginCallBack = async (req, res, next) => {
+  try {
+    const user = req?.user;
+
+    const payload = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
+
+    const accessToken = generateAccessToken(payload);
+
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      signed: true,
+      secure: true,
+      sameSite: "None",
+      domain: process.env.FRONTEND_DOMAIN,
+    });
+
+    res.redirect(process.env.GOOGLE_OAUTH_SUCCESS_REDIRECT);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   userLogin,
   userSignUp,
@@ -259,4 +285,5 @@ module.exports = {
   forgotPassword,
   userEmailVerify,
   userGoogleLoginCallBack,
+  userFacebookLoginCallBack,
 };
