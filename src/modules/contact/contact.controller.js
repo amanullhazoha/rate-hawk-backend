@@ -1,8 +1,12 @@
 const { badRequest } = require("../../config/lib/error");
+const nodemailer = require("../../config/emailService/config");
+const { contactUsTemplate } = require("../../config/emailService/template");
 
 const createContactMessage = async (req, res, next) => {
   try {
     const { email, user_name, message } = req.body;
+
+    nodemailer(contactUsTemplate(email, user_name, message));
 
     const response = {
       code: 200,
