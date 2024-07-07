@@ -32,7 +32,7 @@ const userLogin = async (req, res, next) => {
       signed: true,
       secure: true,
       sameSite: "None",
-      // domain: process.env.FRONTEND_DOMAIN,
+      domain: process.env.FRONTEND_DOMAIN,
     });
 
     res.status(200).send({
