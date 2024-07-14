@@ -38,6 +38,16 @@ const hotelSearchByRegionSchema = object().shape({
   guests: array().required("Currency is required."),
 });
 
+const hotelSearchByIdsSchema = object().shape({
+  checkin: string().required("Check in date is required."),
+  checkout: string().required("Check out data is required."),
+  residency: string().required("Residency is required."),
+  language: string().required("Language is required."),
+  currency: string().required("Currency is required."),
+  guests: array().required("Currency is required."),
+  ids: array().min(1, "At least add one ID."),
+});
+
 const multiCompleteSchema = object().shape({
   query: string().required("Query is required."),
   language: string().required("Language is required."),
@@ -49,5 +59,6 @@ module.exports = {
   hotelInfoSchema,
   hotelHashIDSchema,
   multiCompleteSchema,
+  hotelSearchByIdsSchema,
   hotelSearchByRegionSchema,
 };

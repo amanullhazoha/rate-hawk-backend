@@ -132,6 +132,38 @@ const hotelSearchByRegion = async (req, res, next) => {
   }
 };
 
+const hotelSearchByHotelId = async (req, res, next) => {
+  try {
+    const data = await axios.post(
+      "https://api.worldota.net/api/b2b/v3/search/serp/hotels/",
+      req.body,
+      {
+        headers: {
+          Authorization: `Basic ${encodedCredentials}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+
+    const response = {
+      code: 200,
+      message: "Hotel rate gate successfully",
+      data: data.data,
+      links: {
+        self: req.url,
+      },
+    };
+
+    res.status(200).send(response);
+  } catch (error) {
+    console.log(error);
+
+    next(error);
+  }
+};
+
 const hotelInfo = async (req, res, next) => {
   try {
     const data = await axios.post(
@@ -228,6 +260,70 @@ const createOrder = async (req, res, next) => {
   }
 };
 
+const orderFinish = async (req, res, next) => {
+  try {
+    const data = await axios.post(
+      "https://api.worldota.net/api/b2b/v3/hotel/order/booking/finish/",
+      req.body,
+      {
+        headers: {
+          Authorization: `Basic ${encodedCredentials}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+
+    const response = {
+      code: 200,
+      message: "Hotel search successfully",
+      data: data.data,
+      links: {
+        self: req.url,
+      },
+    };
+
+    res.status(200).send(response);
+  } catch (error) {
+    console.log(error);
+
+    next(error);
+  }
+};
+
+const orderInfo = async (req, res, next) => {
+  try {
+    const data = await axios.post(
+      "https://api.worldota.net/api/b2b/v3/hotel/order/info/",
+      req.body,
+      {
+        headers: {
+          Authorization: `Basic ${encodedCredentials}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+
+    const response = {
+      code: 200,
+      message: "Hotel search successfully",
+      data: data.data,
+      links: {
+        self: req.url,
+      },
+    };
+
+    res.status(200).send(response);
+  } catch (error) {
+    console.log(error);
+
+    next(error);
+  }
+};
+
 const createPreBook = async (req, res, next) => {
   try {
     const data = await axios.post(
@@ -261,11 +357,14 @@ const createPreBook = async (req, res, next) => {
 };
 
 module.exports = {
+  orderInfo,
   hotelInfo,
+  orderFinish,
   createOrder,
   getHotelData,
   createPreBook,
   multiComplete,
   getHotelHashID,
   hotelSearchByRegion,
+  hotelSearchByHotelId,
 };
