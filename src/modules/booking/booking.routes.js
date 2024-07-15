@@ -64,4 +64,6 @@ module.exports = (app) => {
   app
     .route("/api/v1/secured/pre-book/create")
     .post(UserStrategy, validate(preOderSchema), createPreBook);
+
+  app.route("/api/v1/rate-hawk/webhook").post(createPreBook);
 };
