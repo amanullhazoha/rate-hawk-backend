@@ -299,7 +299,7 @@ const logout = (req, res) => {
     signed: true,
     secure: true,
     sameSite: "None",
-    domain: process.env.FRONTEND_DOMAIN,
+    // domain: process.env.FRONTEND_DOMAIN,
   });
 
   res.status(200).json(response);
