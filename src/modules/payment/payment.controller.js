@@ -17,7 +17,7 @@ const stripePaymentIntent = async (req, res, next) => {
       line_items: [
         {
           price_data: {
-            currency: product.currency,
+            currency: product?.currency,
             product_data: {
               name: product?.name,
               description: product?.description,

@@ -24,8 +24,13 @@ const {
   createPreBook,
   multiComplete,
   getHotelHashID,
+  createUserOrder,
   hotelSearchByRegion,
   hotelSearchByHotelId,
+
+  getAllOrder,
+  getOrderByOrderId,
+  getAllOrderByUserId,
 } = require(path.join(process.cwd(), "src/modules/booking/booking.controller"));
 
 module.exports = (app) => {
@@ -53,17 +58,25 @@ module.exports = (app) => {
 
   app
     .route("/api/v1/secured/order/create")
-    .post(UserStrategy, validate(oderSchema), createOrder);
+    .post(validate(oderSchema), createOrder);
+
+  app
+    .route("/api/v1/secured/user/order")
+    .get((req, res) => res.status(200).send("get all order"))
+    .post(createUserOrder)
+    .put((req, res) => res.status(200).send("Order status update"));
 
   app.route("/api/v1/secured/order/finish").post(orderFinish);
 
-  app
-    .route("/api/v1/secured/order/order/info")
-    .post(UserStrategy, validate(oderSchema), orderInfo);
+  app.route("/api/v1/secured/order/info").post(orderInfo);
+
+  app.route("/api/v1/secured/all/order").get(getAllOrder);
+  app.route("/api/v1/secured/user/order").get(getAllOrderByUserId);
+  app.route("/api/v1/secured/user/order/:id").get(getOrderByOrderId);
 
   app
     .route("/api/v1/secured/pre-book/create")
-    .post(UserStrategy, validate(preOderSchema), createPreBook);
+    .post(validate(preOderSchema), createPreBook);
 
   app.route("/api/v1/rate-hawk/webhook").post(createPreBook);
 };

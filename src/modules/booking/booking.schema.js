@@ -11,6 +11,7 @@ const oderSchema = object().shape({
   user_ip: string().required("User IP is required."),
   language: string().required("Language is required."),
   book_hash: string().required("Book hash is required."),
+  partner_order_id: string().required("User order id is required."),
 });
 
 const hotelHashIDSchema = object().shape({

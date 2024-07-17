@@ -1,6 +1,7 @@
 const axios = require("axios");
 const multer = require("multer");
 const User = require("../user/user.model");
+const HotelDump = require("./dumpData.model");
 const { badRequest } = require("../../config/lib/error");
 
 const username = process.env.RATE_HAWK_USER_NAME;
@@ -142,8 +143,69 @@ const DeleteDumpData = async (req, res, next) => {
   }
 };
 
+const getAllHotelList = async (req, res, next) => {
+  try {
+    const filters = req.query.filters;
+    const star_rating = req.query.star;
+    const region_id = req.query.region_id;
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 8;
+
+    let filterBy = {};
+
+    if (region_id) {
+      filterBy = {
+        ...filterBy,
+        "region.id": Number(region_id),
+      };
+    }
+
+    if (star_rating) {
+      filterBy = {
+        ...filterBy,
+        star_rating: Number(star_rating),
+      };
+    }
+
+    if (filters) {
+      filterBy = {
+        ...filterBy,
+        serp_filters: { $in: filters },
+      };
+    }
+
+    const hotels = await HotelDump.find(filterBy)
+      .sort({ _id: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
+
+    const totalItems = await HotelDump.countDocuments(filterBy).exec();
+
+    const response = {
+      code: 200,
+      message: "Get hotel data successful",
+      data: hotels,
+      links: req.path,
+      pagination: {
+        page,
+        limit,
+        totalItems,
+        totalPage: Math.ceil(totalItems / limit),
+      },
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+
+    next(error);
+  }
+};
+
 module.exports = {
   DeleteDumpData,
   uploadDumpData,
   downloadDumpData,
+  getAllHotelList,
 };

@@ -11,7 +11,12 @@ const authorize = require(path.join(
   process.cwd(),
   "src/modules/core/middlewares/authorize",
 ));
-const { DeleteDumpData, uploadDumpData, downloadDumpData } = require(path.join(
+const {
+  DeleteDumpData,
+  uploadDumpData,
+  getAllHotelList,
+  downloadDumpData,
+} = require(path.join(
   process.cwd(),
   "src/modules/dumpData/dumpData.controller",
 ));
@@ -23,4 +28,8 @@ module.exports = (app) => {
     .post(uploadDumpData)
     // .post(UserStrategy, authorize(["admin"]), uploadDumpData)
     .delete(UserStrategy, authorize(["admin"]), DeleteDumpData);
+
+  app.route("/api/v1/public/dump-hotel").get(getAllHotelList);
+
+  app.route("/api/v1/public/dump-hotel/:id").post(downloadDumpData);
 };
