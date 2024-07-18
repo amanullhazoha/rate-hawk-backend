@@ -58,25 +58,29 @@ module.exports = (app) => {
 
   app
     .route("/api/v1/secured/order/create")
-    .post(validate(oderSchema), createOrder);
+    .post(UserStrategy, validate(oderSchema), createOrder);
+
+  app.route("/api/v1/secured/order/finish").post(UserStrategy, orderFinish);
+
+  app.route("/api/v1/secured/order/info").post(UserStrategy, orderInfo);
+
+  app.route("/api/v1/secured/user/order").post(UserStrategy, createUserOrder);
+
+  app.route("/api/v1/secured/all/order").get(UserStrategy, getAllOrder);
 
   app
     .route("/api/v1/secured/user/order")
-    .get((req, res) => res.status(200).send("get all order"))
-    .post(createUserOrder)
-    .put((req, res) => res.status(200).send("Order status update"));
+    .get(UserStrategy, getAllOrderByUserId);
 
-  app.route("/api/v1/secured/order/finish").post(orderFinish);
-
-  app.route("/api/v1/secured/order/info").post(orderInfo);
-
-  app.route("/api/v1/secured/all/order").get(getAllOrder);
-  app.route("/api/v1/secured/user/order").get(getAllOrderByUserId);
-  app.route("/api/v1/secured/user/order/:id").get(getOrderByOrderId);
+  app
+    .route("/api/v1/secured/user/order/:id")
+    .get(UserStrategy, getOrderByOrderId);
 
   app
     .route("/api/v1/secured/pre-book/create")
     .post(validate(preOderSchema), createPreBook);
 
-  app.route("/api/v1/rate-hawk/webhook").post(createPreBook);
+  app
+    .route("/api/v1/rate-hawk/webhook")
+    .post((req, res) => res.status(200).send("webhook call"));
 };

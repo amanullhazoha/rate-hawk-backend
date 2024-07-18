@@ -73,6 +73,8 @@ const uploadDumpData = async (req, res, next) => {
 
       const filePath = req.file;
 
+      console.log(req.body);
+
       const jsonData = JSON.parse(filePath);
 
       console.log("data upload");

@@ -2,11 +2,11 @@ const { Schema, model } = require("mongoose");
 
 const OrderSchema = new Schema(
   {
-    // user_id: {
-    //   type: Schema.ObjectId,
-    //   ref: "User",
-    //   // required: true,
-    // },
+    user_id: {
+      type: Schema.ObjectId,
+      ref: "User",
+      required: true,
+    },
     order_id: {
       type: String,
       required: true,

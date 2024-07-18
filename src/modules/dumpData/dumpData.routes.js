@@ -22,11 +22,12 @@ const {
 ));
 
 module.exports = (app) => {
+  app.route("/api/v1/secured/dump-data/download").post(downloadDumpData);
+
+  app.route("/api/v1/secured/dump-data/upload").post(uploadDumpData);
+
   app
-    .route("/api/v1/secured/dump-data")
-    .get(downloadDumpData)
-    .post(uploadDumpData)
-    // .post(UserStrategy, authorize(["admin"]), uploadDumpData)
+    .route("/api/v1/secured/dump-data/delete")
     .delete(UserStrategy, authorize(["admin"]), DeleteDumpData);
 
   app.route("/api/v1/public/dump-hotel").get(getAllHotelList);

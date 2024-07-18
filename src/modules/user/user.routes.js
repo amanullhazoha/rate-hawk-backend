@@ -52,7 +52,6 @@ module.exports = (app) => {
   app
     .route("/api/v1/secured/user/:id")
     .get(UserStrategy, authorize(["admin"]), getUserByID)
-    // .get(UserStrategy, authorize(["admin"]), getUserByID)
     .put(
       UserStrategy,
       authorize(["admin"]),

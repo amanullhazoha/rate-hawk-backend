@@ -3,6 +3,7 @@ const cors = require("cors");
 const express = require("express");
 const session = require("express-session");
 const connectDB = require("../db/index");
+const { stripeWebHook } = require("../../modules/payment/payment.controller");
 
 const cookieParser = require("cookie-parser");
 const config = require(path.join(process.cwd(), "src/config"));
@@ -19,10 +20,7 @@ module.exports = async () => {
   app.post(
     "/webhook",
     express.raw({ type: "application/json" }),
-    (req, res) => {
-      res.status(200).json({ data: "hi" });
-    },
-    // paymentController.webhook,
+    stripeWebHook,
   );
 
   const allowedOrigins = process.env.FRONTEND_BASE_URL.split(",");

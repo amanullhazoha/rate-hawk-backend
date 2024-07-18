@@ -310,6 +310,7 @@ const createOrder = async (req, res, next) => {
 
 const createUserOrder = async (req, res, next) => {
   try {
+    const user_id = req.user.id;
     const {
       kind,
       images,
@@ -326,6 +327,7 @@ const createUserOrder = async (req, res, next) => {
     const order = new Order({
       kind,
       images,
+      user_id,
       latitude,
       hotel_id,
       region_id,

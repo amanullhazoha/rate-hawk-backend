@@ -1,4 +1,6 @@
 const { badRequest } = require("../../config/lib/error");
+const Transaction = require("./transaction.model");
+const Order = require("../booking/Order.model");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
@@ -44,6 +46,59 @@ const stripePaymentIntent = async (req, res, next) => {
   }
 };
 
+const stripeWebHook = async (req, res, next) => {
+  const sig = req.headers["stripe-signature"];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    res.status(400).send(`Webhook Error: ${err.message}`);
+    console.log("Error", err.message);
+    return;
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    const { plan_id, user_id, interval } = session.metadata;
+    const status = session.status === "complete" ? "active" : "failed";
+
+    const currentDate = new Date();
+    const expirationDate = new Date(currentDate);
+
+    const transaction = new Transaction({
+      payment_id: session.id,
+      subscription_id: session.subscription,
+      invoice_id: session.invoice,
+      amount: session.amount_total / 100,
+      currency: session.currency,
+      status: session.status,
+      payment_status: session.payment_status,
+      payment_method: session.payment_method_types[0],
+      customer_id: session.customer,
+      customer_name: session.customer_details.name,
+      customer_email: session.customer_details.email,
+    });
+
+    const transactionData = await transaction.save();
+
+    const updateOrder = await Order.findOne({
+      status: "active",
+      order_id: user_id,
+    });
+
+    updateOrder.status = "complete";
+    await updateOrder.save();
+
+    // nodeMailer(template.subscription(user.email, user.name));
+  }
+
+  // Return a 200 res to acknowledge receipt of the event
+  res.status(200).json({ message: "Payment is Successfully!" });
+};
+
 module.exports = {
+  stripeWebHook,
   stripePaymentIntent,
 };
