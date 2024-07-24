@@ -231,17 +231,22 @@ const getHotelHashID = async (req, res, next) => {
 
 const createOrder = async (req, res, next) => {
   try {
+    const user_id = req.user._id;
+
     const {
       room,
+      kind,
       adults,
       hotel_id,
       currency,
+      region_id,
       residency,
       check_in,
       language,
       children,
       check_out,
       hotel_name,
+      region_name,
       star_rating,
       total_night,
       total_amount,
@@ -263,28 +268,28 @@ const createOrder = async (req, res, next) => {
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
 
     const order = new Order({
-      user_id: "",
+      kind,
+      user_id,
       language,
       children,
       check_in,
       hotel_id,
       residency,
+      region_id,
       check_out,
       hotel_name,
       total_night,
       star_rating,
+      region_name,
       total_amount,
-      kind: "Hotel",
       guests: adults,
       price_per_night,
-      region_name: "Dhaka",
       partner_order_id,
       images: room.images,
       rg_ext: room?.rg_ext,
       room_name: room?.name,
       currency_code: currency,
       order_id: data?.data?.data?.order_id,
-      region_id: "45454",
     });
 
     const orderData = await order.save();
@@ -313,6 +318,7 @@ const createUserOrder = async (req, res, next) => {
     const user_id = req.user.id;
     const {
       kind,
+      room,
       images,
       latitude,
       hotel_id,
@@ -326,6 +332,7 @@ const createUserOrder = async (req, res, next) => {
 
     const order = new Order({
       kind,
+      room,
       images,
       user_id,
       latitude,
@@ -333,6 +340,7 @@ const createUserOrder = async (req, res, next) => {
       region_id,
       longitude,
       hotel_name,
+      choose_room,
       star_rating,
       region_name,
       partner_order_id,
@@ -476,7 +484,7 @@ const getAllOrder = async (req, res, next) => {
 
 const getAllOrderByUserId = async (req, res, next) => {
   try {
-    const user_id = req.user.id;
+    const user_id = req.user._id;
 
     const orders = await Order.find({ user_id });
 

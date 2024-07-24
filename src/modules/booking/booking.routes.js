@@ -64,17 +64,14 @@ module.exports = (app) => {
 
   app.route("/api/v1/secured/order/info").post(UserStrategy, orderInfo);
 
-  app.route("/api/v1/secured/user/order").post(UserStrategy, createUserOrder);
-
   app.route("/api/v1/secured/all/order").get(UserStrategy, getAllOrder);
 
   app
-    .route("/api/v1/secured/user/order")
-    .get(UserStrategy, getAllOrderByUserId);
+    .route("/api/v1/secured/user-order")
+    .get(UserStrategy, getAllOrderByUserId)
+    .post(UserStrategy, createUserOrder);
 
-  app
-    .route("/api/v1/secured/user/order/:id")
-    .get(UserStrategy, getOrderByOrderId);
+  app.route("/api/v1/secured/user/order/:id").get(getOrderByOrderId);
 
   app
     .route("/api/v1/secured/pre-book/create")

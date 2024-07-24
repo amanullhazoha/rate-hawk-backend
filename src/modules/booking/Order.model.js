@@ -75,6 +75,18 @@ const OrderSchema = new Schema(
       type: String,
       required: true,
     },
+    room: {
+      type: Object,
+      required: true,
+    },
+    room: {
+      type: Object,
+      required: true,
+    },
+    choose_room: {
+      type: Object,
+      required: true,
+    },
   },
   {
     timestamps: true,
