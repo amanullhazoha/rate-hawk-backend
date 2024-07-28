@@ -74,35 +74,30 @@ const stripeWebHook = async (req, res, next) => {
     const session = event.data.object;
     console.log(session, "webhook");
 
-    const { plan_id, user_id, interval } = session.metadata;
-    const status = session.status === "complete" ? "active" : "failed";
-
-    const currentDate = new Date();
-    const expirationDate = new Date(currentDate);
-
     const transaction = new Transaction({
       payment_id: session.id,
-      subscription_id: session.subscription,
-      invoice_id: session.invoice,
-      amount: session.amount_total / 100,
-      currency: session.currency,
       status: session.status,
-      payment_status: session.payment_status,
-      payment_method: session.payment_method_types[0],
+      currency: session.currency,
+      invoice_id: session.invoice,
       customer_id: session.customer,
+      amount: session.amount_total / 100,
+      order_id: session.metadata.order_id,
+      subscription_id: session.subscription,
+      payment_status: session.payment_status,
       customer_name: session.customer_details.name,
       customer_email: session.customer_details.email,
+      payment_method: session.payment_method_types[0],
     });
 
     const transactionData = await transaction.save();
 
-    const updateOrder = await Order.findOne({
-      status: "active",
-      order_id: user_id,
-    });
+    // const updateOrder = await Order.findOne({
+    //   status: "active",
+    //   order_id: user_id,
+    // });
 
-    updateOrder.status = "complete";
-    await updateOrder.save();
+    // updateOrder.status = "complete";
+    // await updateOrder.save();
 
     // nodeMailer(template.subscription(user.email, user.name));
   }
