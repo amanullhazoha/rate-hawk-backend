@@ -125,8 +125,8 @@ const stripeWebHook = async (req, res, next) => {
     });
 
     if (updateOrder) {
-      updateOrder?.status = "Paid";
-      
+      updateOrder.status = "Paid";
+
       await updateOrder.save();
     }
 
