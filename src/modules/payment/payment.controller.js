@@ -71,6 +71,8 @@ const stripeWebHook = async (req, res, next) => {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
+    console.log(session);
+
     const { plan_id, user_id, interval } = session.metadata;
     const status = session.status === "complete" ? "active" : "failed";
 
