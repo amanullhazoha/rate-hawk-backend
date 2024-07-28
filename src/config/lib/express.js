@@ -25,6 +25,7 @@ module.exports = async () => {
 
   const allowedOrigins = process.env.FRONTEND_BASE_URL.split(",");
 
+  console.log(allowedOrigins);
   const corsOptions = {
     origin: (origin, callback) => {
       if (allowedOrigins.indexOf(origin) !== -1 || !origin) {

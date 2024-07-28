@@ -247,6 +247,7 @@ const createOrder = async (req, res, next) => {
       check_out,
       hotel_name,
       region_name,
+      choose_room,
       star_rating,
       total_night,
       total_amount,
@@ -278,6 +279,7 @@ const createOrder = async (req, res, next) => {
       region_id,
       check_out,
       hotel_name,
+      room: room,
       total_night,
       star_rating,
       region_name,
@@ -289,6 +291,7 @@ const createOrder = async (req, res, next) => {
       rg_ext: room?.rg_ext,
       room_name: room?.name,
       currency_code: currency,
+      choose_room: choose_room,
       order_id: data?.data?.data?.order_id,
     });
 
@@ -344,6 +347,7 @@ const createUserOrder = async (req, res, next) => {
       star_rating,
       region_name,
       partner_order_id,
+      status: "Pending",
     });
 
     const orderData = await order.save();
@@ -472,6 +476,8 @@ const getAllOrder = async (req, res, next) => {
       .limit(limit)
       .exec();
 
+    const totalItems = await Order.countDocuments().exec();
+
     const response = {
       code: 200,
       message: "Get all order successfully",
@@ -506,6 +512,8 @@ const getAllOrderByUserId = async (req, res, next) => {
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
+
+    const totalItems = await Order.countDocuments().exec();
 
     const response = {
       code: 200,

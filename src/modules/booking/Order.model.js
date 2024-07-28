@@ -27,6 +27,10 @@ const OrderSchema = new Schema(
       type: String,
       required: true,
     },
+    residency: {
+      type: String,
+      required: true,
+    },
     partner_order_id: {
       type: String,
       required: true,
@@ -75,8 +79,8 @@ const OrderSchema = new Schema(
       type: String,
       required: true,
     },
-    room: {
-      type: Object,
+    status: {
+      type: String,
       required: true,
     },
     room: {

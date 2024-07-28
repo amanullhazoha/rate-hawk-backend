@@ -1,12 +1,22 @@
 const { badRequest } = require("../../config/lib/error");
 const Transaction = require("./transaction.model");
 const Order = require("../booking/Order.model");
+const User = require("../user/user.model");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const stripePaymentIntent = async (req, res, next) => {
   try {
+    const user_id = req.user.id;
+
+    const user = await User.findById(user_id);
+
+    if (!user) throw badRequest("User not exist!");
+
+    console.log(req.body);
+
     const product = {
+      created_by: user_id,
       name: req.body.hotel_name,
       amount: req.body.total_amount,
       description: req.body.hotel_name,
@@ -30,7 +40,7 @@ const stripePaymentIntent = async (req, res, next) => {
         },
       ],
       metadata: req.body,
-      customer_email: `amanullhazoha3784@gmail.com`,
+      customer_email: user?.email,
       cancel_url: `${process.env.FRONTEND_BASE_URL}/error`,
       success_url: `${process.env.FRONTEND_BASE_URL}/success`,
     });
