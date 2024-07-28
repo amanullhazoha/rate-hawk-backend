@@ -1,7 +1,8 @@
-const { badRequest } = require("../../config/lib/error");
-const Transaction = require("./transaction.model");
-const Order = require("../booking/Order.model");
+const axios = require("axios");
 const User = require("../user/user.model");
+const Order = require("../booking/Order.model");
+const Transaction = require("./transaction.model");
+const { badRequest } = require("../../config/lib/error");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
@@ -16,6 +17,8 @@ const orderFinish = async (payload) => {
       },
     },
   );
+
+  console.log(data, "order finish");
 
   if (data?.data?.status === "error") throw badRequest(data?.data?.error);
 };
