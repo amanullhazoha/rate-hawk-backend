@@ -13,7 +13,7 @@ const stripePaymentIntent = async (req, res, next) => {
 
     if (!user) throw badRequest("User not exist!");
 
-    console.log(req.body);
+    // console.log(req.body);
 
     const product = {
       created_by: user_id,
@@ -61,6 +61,7 @@ const stripeWebHook = async (req, res, next) => {
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   let event;
+
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
@@ -71,7 +72,7 @@ const stripeWebHook = async (req, res, next) => {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
-    console.log(session);
+    console.log(session, "webhook");
 
     const { plan_id, user_id, interval } = session.metadata;
     const status = session.status === "complete" ? "active" : "failed";
