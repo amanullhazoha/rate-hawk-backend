@@ -5,10 +5,10 @@ const User = require("../user/user.model");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-const orderFinish = async (data) => {
+const orderFinish = async (payload) => {
   const data = await axios.post(
     "https://api.worldota.net/api/b2b/v3/hotel/order/booking/finish/",
-    data,
+    payload,
     {
       headers: {
         Authorization: `Basic ${encodedCredentials}`,
