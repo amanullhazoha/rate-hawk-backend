@@ -463,7 +463,14 @@ const createPreBook = async (req, res, next) => {
 
 const getAllOrder = async (req, res, next) => {
   try {
-    const orders = await Order.find();
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 10;
+
+    const orders = await Order.find()
+      .sort({ _id: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
 
     const response = {
       code: 200,
@@ -471,6 +478,12 @@ const getAllOrder = async (req, res, next) => {
       data: orders,
       links: {
         self: req.url,
+      },
+      pagination: {
+        page,
+        limit,
+        totalItems,
+        totalPage: Math.ceil(totalItems / limit),
       },
     };
 
@@ -485,8 +498,14 @@ const getAllOrder = async (req, res, next) => {
 const getAllOrderByUserId = async (req, res, next) => {
   try {
     const user_id = req.user._id;
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 10;
 
-    const orders = await Order.find({ user_id });
+    const orders = await Order.find({ user_id })
+      .sort({ _id: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
 
     const response = {
       code: 200,
@@ -494,6 +513,12 @@ const getAllOrderByUserId = async (req, res, next) => {
       data: orders,
       links: {
         self: req.url,
+      },
+      pagination: {
+        page,
+        limit,
+        totalItems,
+        totalPage: Math.ceil(totalItems / limit),
       },
     };
 

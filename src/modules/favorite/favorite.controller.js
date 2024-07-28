@@ -4,8 +4,16 @@ const { badRequest } = require("../../config/lib/error");
 const getAllFavoriteByUser = async (req, res, next) => {
   try {
     const user_id = req.user.id;
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 10;
 
-    const favorites = await Favorite.find({ user: user_id });
+    const favorites = await Favorite.find({ user: user_id })
+      .sort({ _id: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
+
+    const totalItems = await Favorite.countDocuments().exec();
 
     const response = {
       code: 200,
@@ -13,6 +21,12 @@ const getAllFavoriteByUser = async (req, res, next) => {
       data: favorites,
       links: {
         self: req.url,
+      },
+      pagination: {
+        page,
+        limit,
+        totalItems,
+        totalPage: Math.ceil(totalItems / limit),
       },
     };
 
