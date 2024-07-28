@@ -153,9 +153,9 @@ const stripeWebHook = async (req, res, next) => {
       },
     });
 
-    const data = await orderFinish(orderFinishData, res);
+    // const data = await orderFinish(orderFinishData, res);
 
-    if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+    // if (data?.data?.status === "error") throw badRequest(data?.data?.error);
 
     res.status(200).json({ message: "Payment is Successfully!" });
     // nodeMailer(template.subscription(user.email, user.name));
