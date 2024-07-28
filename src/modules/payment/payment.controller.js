@@ -124,8 +124,11 @@ const stripeWebHook = async (req, res, next) => {
       order_id: session.metadata.order_id,
     });
 
-    updateOrder.status = "Paid";
-    await updateOrder.save();
+    if (updateOrder) {
+      updateOrder?.status = "Paid";
+      
+      await updateOrder.save();
+    }
 
     const orderFinishData = JSON.stringify({
       user: {
