@@ -22,9 +22,13 @@ const {
 ));
 
 module.exports = (app) => {
-  app.route("/api/v1/secured/dump-data/download").post(downloadDumpData);
+  app
+    .route("/api/v1/secured/dump-data/download")
+    .post(UserStrategy, authorize(["admin"]), downloadDumpData);
 
-  app.route("/api/v1/secured/dump-data/upload").post(uploadDumpData);
+  app
+    .route("/api/v1/secured/dump-data/upload")
+    .post(UserStrategy, authorize(["admin"]), uploadDumpData);
 
   app
     .route("/api/v1/secured/dump-data/delete")
@@ -32,5 +36,5 @@ module.exports = (app) => {
 
   app.route("/api/v1/public/dump-hotel").get(getAllHotelList);
 
-  app.route("/api/v1/public/dump-hotel/:id").post(downloadDumpData);
+  // app.route("/api/v1/public/dump-hotel/:id").post(downloadDumpData);
 };

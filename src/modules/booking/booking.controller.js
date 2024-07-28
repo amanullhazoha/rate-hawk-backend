@@ -287,6 +287,7 @@ const createOrder = async (req, res, next) => {
       guests: adults,
       price_per_night,
       partner_order_id,
+      status: "Pending",
       images: room.images,
       rg_ext: room?.rg_ext,
       room_name: room?.name,
@@ -347,7 +348,6 @@ const createUserOrder = async (req, res, next) => {
       star_rating,
       region_name,
       partner_order_id,
-      status: "Pending",
     });
 
     const orderData = await order.save();
