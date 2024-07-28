@@ -34,7 +34,16 @@ const getUserProfile = async (req, res, next) => {
 
 const getAllUser = async (req, res, next) => {
   try {
-    const user = await User.find();
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 10;
+
+    const user = await User.find()
+      .sort({ _id: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
+
+    const totalItems = await User.countDocuments().exec();
 
     const response = {
       code: 200,
@@ -42,6 +51,12 @@ const getAllUser = async (req, res, next) => {
       data: user,
       links: {
         self: req.url,
+      },
+      pagination: {
+        page,
+        limit,
+        totalItems,
+        totalPage: Math.ceil(totalItems / limit),
       },
     };
 
