@@ -33,7 +33,6 @@ const TransactionSchema = new Schema(
     },
     customer_id: {
       type: String,
-      required: true,
     },
     status: {
       type: String,
