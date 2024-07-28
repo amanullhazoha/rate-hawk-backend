@@ -4,6 +4,11 @@ const Order = require("../booking/Order.model");
 const Transaction = require("./transaction.model");
 const { badRequest } = require("../../config/lib/error");
 
+const username = process.env.RATE_HAWK_USER_NAME;
+const password = process.env.RATE_HAWK_PASSWORD;
+
+const encodedCredentials = btoa(`${username}:${password}`);
+
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const orderFinish = async (payload) => {
