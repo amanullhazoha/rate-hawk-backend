@@ -5,6 +5,21 @@ const User = require("../user/user.model");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
+const orderFinish = async (data) => {
+  const data = await axios.post(
+    "https://api.worldota.net/api/b2b/v3/hotel/order/booking/finish/",
+    data,
+    {
+      headers: {
+        Authorization: `Basic ${encodedCredentials}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+};
+
 const stripePaymentIntent = async (req, res, next) => {
   try {
     const user_id = req.user.id;
@@ -91,13 +106,41 @@ const stripeWebHook = async (req, res, next) => {
 
     const transactionData = await transaction.save();
 
-    // const updateOrder = await Order.findOne({
-    //   status: "active",
-    //   order_id: user_id,
-    // });
+    const updateOrder = await Order.findOne({
+      status: "Pending",
+      order_id: session.metadata.order_id,
+    });
 
-    // updateOrder.status = "complete";
-    // await updateOrder.save();
+    updateOrder.status = "Paid";
+    await updateOrder.save();
+
+    const orderFinishData = JSON.stringify({
+      user: {
+        email: session.customer_details.email,
+        phone: "12312321",
+      },
+      partner: {
+        partner_order_id: updateOrder?.partner_order_id,
+      },
+      language: "en",
+      rooms: [
+        {
+          guests: [
+            {
+              first_name: "Marty",
+              last_name: "Ratehawk",
+            },
+          ],
+        },
+      ],
+      payment_type: {
+        type: "deposit",
+        amount: Number(updateOrder?.total_amount),
+        currency_code: updateOrder?.currency_code,
+      },
+    });
+
+    await orderFinish(orderFinishData);
 
     // nodeMailer(template.subscription(user.email, user.name));
   }
