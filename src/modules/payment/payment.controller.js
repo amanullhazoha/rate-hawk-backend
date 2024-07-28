@@ -25,7 +25,8 @@ const orderFinish = async (payload) => {
 
   console.log(data, "order finish");
 
-  if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+  return data;
+  // if (data?.data?.status === "error") throw badRequest(data?.data?.error);
 };
 
 const stripePaymentIntent = async (req, res, next) => {
@@ -142,14 +143,17 @@ const stripeWebHook = async (req, res, next) => {
         },
       ],
       payment_type: {
-        type: "hotel",
+        type: "deposit",
         amount: updateOrder?.total_amount,
         currency_code: updateOrder?.currency_code,
       },
     });
 
-    await orderFinish(orderFinishData);
+    const data = await orderFinish(orderFinishData);
 
+    if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+
+    res.status(200).json({ message: "Payment is Successfully!" });
     // nodeMailer(template.subscription(user.email, user.name));
   }
 
