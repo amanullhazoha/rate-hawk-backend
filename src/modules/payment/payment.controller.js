@@ -143,7 +143,7 @@ const stripeWebHook = async (req, res, next) => {
       ],
       payment_type: {
         type: "deposit",
-        amount: Number(updateOrder?.total_amount),
+        amount: updateOrder?.total_amount,
         currency_code: updateOrder?.currency_code,
       },
     });
