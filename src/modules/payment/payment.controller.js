@@ -145,9 +145,10 @@ const stripeWebHook = async (req, res, next) => {
         },
       ],
       payment_type: {
-        type: updateOrder?.payment_type,
+        // type: updateOrder?.payment_type,
         amount: updateOrder?.total_amount,
         currency_code: updateOrder?.currency_code,
+        type: updateOrder?.choose_room?.payment_options?.payment_types[0]?.type,
       },
     });
 
