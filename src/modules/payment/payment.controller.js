@@ -23,7 +23,7 @@ const orderFinish = async (payload) => {
     },
   );
 
-  console.log(data, "order finish");
+  console.log(data?.data, "order finish");
 
   return data;
 };
@@ -95,7 +95,6 @@ const stripeWebHook = async (req, res, next) => {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
-    console.log(session, "webhook");
 
     const transaction = new Transaction({
       payment_id: session.id,
