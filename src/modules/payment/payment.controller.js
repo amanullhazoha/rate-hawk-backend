@@ -155,12 +155,9 @@ const stripeWebHook = async (req, res, next) => {
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
 
-    res.status(200).json({ message: "Payment is Successfully!" });
+    return res.status(200).json({ message: "Payment is Successfully!" });
     // nodeMailer(template.subscription(user.email, user.name));
   }
-
-  // Return a 200 res to acknowledge receipt of the event
-  res.status(200).json({ message: "Payment is Successfully!" });
 };
 
 module.exports = {
