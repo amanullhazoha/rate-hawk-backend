@@ -11,26 +11,21 @@ const encodedCredentials = btoa(`${username}:${password}`);
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-const orderFinish = async (payload, res) => {
-  try {
-    const data = await axios.post(
-      "https://api.worldota.net/api/b2b/v3/hotel/order/booking/finish/",
-      payload,
-      {
-        headers: {
-          Authorization: `Basic ${encodedCredentials}`,
-          "Content-Type": "application/json",
-        },
+const orderFinish = async (payload) => {
+  const data = await axios.post(
+    "https://api.worldota.net/api/b2b/v3/hotel/order/booking/finish/",
+    payload,
+    {
+      headers: {
+        Authorization: `Basic ${encodedCredentials}`,
+        "Content-Type": "application/json",
       },
-    );
+    },
+  );
 
-    console.log(data, "order finish");
+  console.log(data, "order finish");
 
-    return data;
-  } catch (error) {
-    res.status(200).json({ message: "There was a problem!" });
-  }
-  // if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+  return data;
 };
 
 const stripePaymentIntent = async (req, res, next) => {
@@ -156,7 +151,7 @@ const stripeWebHook = async (req, res, next) => {
       },
     });
 
-    const data = await orderFinish(orderFinishData, res);
+    const data = await orderFinish(orderFinishData);
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
 
