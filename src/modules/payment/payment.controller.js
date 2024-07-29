@@ -1,12 +1,50 @@
-const { badRequest } = require("../../config/lib/error");
-const Transaction = require("./transaction.model");
+const axios = require("axios");
+const User = require("../user/user.model");
 const Order = require("../booking/Order.model");
+const Transaction = require("./transaction.model");
+const { badRequest } = require("../../config/lib/error");
+
+const username = process.env.RATE_HAWK_USER_NAME;
+const password = process.env.RATE_HAWK_PASSWORD;
+
+const encodedCredentials = btoa(`${username}:${password}`);
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
+const orderFinish = async (payload, res) => {
+  try {
+    const data = await axios.post(
+      "https://api.worldota.net/api/b2b/v3/hotel/order/booking/finish/",
+      payload,
+      {
+        headers: {
+          Authorization: `Basic ${encodedCredentials}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    console.log(data, "order finish");
+
+    return data;
+  } catch (error) {
+    res.status(200).json({ message: "There was a problem!" });
+  }
+  // if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+};
+
 const stripePaymentIntent = async (req, res, next) => {
   try {
+    const user_id = req.user.id;
+
+    const user = await User.findById(user_id);
+
+    if (!user) throw badRequest("User not exist!");
+
+    // console.log(req.body);
+
     const product = {
+      created_by: user_id,
       name: req.body.hotel_name,
       amount: req.body.total_amount,
       description: req.body.hotel_name,
@@ -30,7 +68,7 @@ const stripePaymentIntent = async (req, res, next) => {
         },
       ],
       metadata: req.body,
-      customer_email: `amanullhazoha3784@gmail.com`,
+      customer_email: user?.email,
       cancel_url: `${process.env.FRONTEND_BASE_URL}/error`,
       success_url: `${process.env.FRONTEND_BASE_URL}/success`,
     });
@@ -51,6 +89,7 @@ const stripeWebHook = async (req, res, next) => {
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   let event;
+
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
@@ -61,36 +100,67 @@ const stripeWebHook = async (req, res, next) => {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
-    const { plan_id, user_id, interval } = session.metadata;
-    const status = session.status === "complete" ? "active" : "failed";
-
-    const currentDate = new Date();
-    const expirationDate = new Date(currentDate);
+    console.log(session, "webhook");
 
     const transaction = new Transaction({
       payment_id: session.id,
-      subscription_id: session.subscription,
-      invoice_id: session.invoice,
-      amount: session.amount_total / 100,
-      currency: session.currency,
       status: session.status,
-      payment_status: session.payment_status,
-      payment_method: session.payment_method_types[0],
+      currency: session.currency,
+      invoice_id: session.invoice,
       customer_id: session.customer,
+      amount: session.amount_total / 100,
+      order_id: session.metadata.order_id,
+      subscription_id: session.subscription,
+      payment_status: session.payment_status,
       customer_name: session.customer_details.name,
       customer_email: session.customer_details.email,
+      payment_method: session.payment_method_types[0],
     });
 
     const transactionData = await transaction.save();
 
     const updateOrder = await Order.findOne({
-      status: "active",
-      order_id: user_id,
+      status: "Pending",
+      order_id: session.metadata.order_id,
     });
 
-    updateOrder.status = "complete";
-    await updateOrder.save();
+    if (updateOrder) {
+      updateOrder.status = "Paid";
 
+      await updateOrder.save();
+    }
+
+    const orderFinishData = JSON.stringify({
+      user: {
+        email: session.customer_details.email,
+        phone: "12312321",
+      },
+      partner: {
+        partner_order_id: updateOrder?.partner_order_id,
+      },
+      language: "en",
+      rooms: [
+        {
+          guests: [
+            {
+              first_name: "Marty",
+              last_name: "Ratehawk",
+            },
+          ],
+        },
+      ],
+      payment_type: {
+        type: "deposit",
+        amount: updateOrder?.total_amount,
+        currency_code: updateOrder?.currency_code,
+      },
+    });
+
+    // const data = await orderFinish(orderFinishData, res);
+
+    // if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+
+    res.status(200).json({ message: "Payment is Successfully!" });
     // nodeMailer(template.subscription(user.email, user.name));
   }
 

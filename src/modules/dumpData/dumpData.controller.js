@@ -115,25 +115,12 @@ const DeleteDumpData = async (req, res, next) => {
 
     if (!user) throw badRequest("User not exist!");
 
-    const payload = {
-      phone,
-      gender,
-      address,
-      user_name,
-      bath_date,
-      about_you,
-    };
-
-    Object.keys(payload).forEach((key) => {
-      user[key] = payload[key] ?? user[key];
-    });
-
-    await user.save();
+    const dumpData = await HotelDump.deleteMany();
 
     const response = {
       code: 200,
-      message: "User update successful",
-      data: user,
+      message: "Hotel dump data delete successful",
+      data: dumpData,
       links: req.path,
     };
 

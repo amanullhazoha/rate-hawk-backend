@@ -2,32 +2,47 @@ const { Schema, model } = require("mongoose");
 
 const TransactionSchema = new Schema(
   {
-    user_id: {
-      type: Schema.ObjectId,
-      ref: "User",
-      required: true,
+    payment_id: {
+      type: String,
+    },
+    subscription_id: {
+      type: String,
+    },
+    invoice_id: {
+      type: String,
     },
     order_id: {
       type: String,
       required: true,
     },
-    currency_code: {
+    currency: {
       type: String,
       required: true,
     },
-    total_amount: {
+    amount: {
       type: String,
       required: true,
     },
-    total_night: {
+    customer_name: {
       type: String,
       required: true,
     },
-    partner_order_id: {
+    customer_email: {
       type: String,
       required: true,
+    },
+    customer_id: {
+      type: String,
     },
     status: {
+      type: String,
+      required: true,
+    },
+    payment_status: {
+      type: String,
+      required: true,
+    },
+    payment_method: {
       type: String,
       required: true,
     },
