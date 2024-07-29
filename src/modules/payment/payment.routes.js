@@ -3,11 +3,15 @@ const validate = require(path.join(
   process.cwd(),
   "src/modules/core/middlewares/validate.middleware",
 ));
+const authorize = require(path.join(
+  process.cwd(),
+  "src/modules/core/middlewares/authorize",
+));
 const UserStrategy = require(path.join(
   process.cwd(),
   "src/modules/core/middlewares/authenticate",
 ));
-const { stripePaymentIntent } = require(path.join(
+const { stripePaymentIntent, getAllTransaction } = require(path.join(
   process.cwd(),
   "src/modules/payment/payment.controller",
 ));
@@ -19,5 +23,5 @@ module.exports = (app) => {
 
   app
     .route("/api/v1/secured/transaction-history")
-    .post(UserStrategy, (req, res) => res.status(200).send("history"));
+    .get(UserStrategy, authorize(["admin"]), getAllTransaction);
 };

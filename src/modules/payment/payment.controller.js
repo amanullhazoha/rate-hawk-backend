@@ -160,7 +160,42 @@ const stripeWebHook = async (req, res, next) => {
   }
 };
 
+const getAllTransaction = async (req, res, next) => {
+  try {
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 8;
+
+    const transactions = await Transaction.find()
+      .sort({ _id: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
+
+    const totalItems = await Transaction.countDocuments().exec();
+
+    const response = {
+      code: 200,
+      message: "Get transaction data successful",
+      data: transactions,
+      links: req.path,
+      pagination: {
+        page,
+        limit,
+        totalItems,
+        totalPage: Math.ceil(totalItems / limit),
+      },
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+
+    next(error);
+  }
+};
+
 module.exports = {
   stripeWebHook,
+  getAllTransaction,
   stripePaymentIntent,
 };
