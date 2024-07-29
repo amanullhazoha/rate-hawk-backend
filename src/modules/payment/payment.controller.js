@@ -145,16 +145,19 @@ const stripeWebHook = async (req, res, next) => {
         },
       ],
       payment_type: {
-        // type: updateOrder?.payment_type,
+        type: updateOrder?.payment_type,
         amount: updateOrder?.total_amount,
         currency_code: updateOrder?.currency_code,
-        type: updateOrder?.choose_room?.payment_options?.payment_types[0]?.type,
+        // type: updateOrder?.choose_room?.payment_options?.payment_types[0]?.type,
       },
     });
 
     const data = await orderFinish(orderFinishData);
 
-    if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+    // if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+
+    if (data?.data?.status === "error")
+      return res.status(400).json({ message: data?.data?.error });
 
     return res.status(200).json({ message: "Payment is Successfully!" });
     // nodeMailer(template.subscription(user.email, user.name));
