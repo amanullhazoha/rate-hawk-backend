@@ -126,6 +126,8 @@ const stripeWebHook = async (req, res, next) => {
       await updateOrder.save();
     }
 
+    console.log(updateOrder?.payment_type);
+
     const orderFinishData = JSON.stringify({
       user: {
         email: session.customer_details.email,
