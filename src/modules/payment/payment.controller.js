@@ -129,7 +129,7 @@ const stripeWebHook = async (req, res, next) => {
     const orderFinishData = JSON.stringify({
       user: {
         email: session.customer_details.email,
-        phone: "12312321",
+        phone: session.metadata.phone,
       },
       partner: {
         partner_order_id: updateOrder?.partner_order_id,

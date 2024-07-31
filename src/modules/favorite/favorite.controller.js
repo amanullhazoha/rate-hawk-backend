@@ -13,7 +13,7 @@ const getAllFavoriteByUser = async (req, res, next) => {
       .limit(limit)
       .exec();
 
-    const totalItems = await Favorite.countDocuments().exec();
+    const totalItems = await Favorite.countDocuments({ user: user_id }).exec();
 
     const response = {
       code: 200,
