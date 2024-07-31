@@ -1,27 +1,12 @@
+const fs = require("fs");
 const axios = require("axios");
 const multer = require("multer");
-const User = require("../user/user.model");
 const HotelDump = require("./dumpData.model");
-const { badRequest } = require("../../config/lib/error");
 
 const username = process.env.RATE_HAWK_USER_NAME;
 const password = process.env.RATE_HAWK_PASSWORD;
 
-const storage = multer.memoryStorage();
-const upload = multer({
-  storage: storage,
-  // limits: {
-  //   fileSize: 5 * 1024 * 1024,
-  // },
-  fileFilter: (req, file, cb) => {
-    console.log(file.mimetype);
-
-    if (file.mimetype !== "application/octet-stream") {
-      return cb(new Error("Only json files are allowed"));
-    }
-    cb(null, true);
-  },
-}).single("file");
+const upload = multer({ dest: "uploads/" }).single("file");
 
 const encodedCredentials = btoa(`${username}:${password}`);
 
@@ -60,43 +45,41 @@ const downloadDumpData = async (req, res, next) => {
 
 const uploadDumpData = async (req, res, next) => {
   try {
-    // const filePath = path.join(__dirname, "data.json");
     upload(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
-        // Multer error
         return res.status(400).send({ error: err.message });
       } else if (err) {
-        // Other errors
-        console.log(err);
         return res.status(500).send({ error: "Something went wrong" });
       }
 
-      const filePath = req.file;
+      if (!req.file) {
+        return res.status(400).send({ error: "No file uploaded" });
+      }
 
-      console.log(req.body);
+      const filePath = req.file.path;
 
-      const jsonData = JSON.parse(filePath);
+      try {
+        const fileContent = fs.readFileSync(filePath, "utf8");
 
-      console.log("data upload");
+        const jsonData = JSON.parse(fileContent);
 
-      // DataModel.insertMany(jsonData)
-      //   .then(() => {
-      //     console.log("Data successfully imported");
-      //   })
-      //   .catch((err) => {
-      //     console.error("Error inserting data", err);
-      //   });
+        const dumpData = await HotelDump.insertMany(jsonData);
 
-      const response = {
-        code: 200,
-        message: "User get all successfully",
-        data: {},
-        links: {
-          self: req.url,
-        },
-      };
+        fs.unlinkSync(filePath);
 
-      res.status(200).send(response);
+        const response = {
+          code: 200,
+          message: "Hotel dump data uploaded successfully",
+          data: { message: "Data upload done." },
+          links: {
+            self: req.url,
+          },
+        };
+
+        res.status(200).send(response);
+      } catch (parseError) {
+        return res.status(400).send({ error: "Invalid JSON format" });
+      }
     });
   } catch (error) {
     console.log(error);
@@ -107,14 +90,6 @@ const uploadDumpData = async (req, res, next) => {
 
 const DeleteDumpData = async (req, res, next) => {
   try {
-    const user_id = req.user.id;
-    const { user_name, gender, address, phone, bath_date, about_you } =
-      req.body;
-
-    const user = await User.findById(user_id);
-
-    if (!user) throw badRequest("User not exist!");
-
     const dumpData = await HotelDump.deleteMany();
 
     const response = {
