@@ -74,7 +74,7 @@ module.exports = (app) => {
   app.route("/api/v1/secured/user/order/:id").get(getOrderByOrderId);
 
   app
-    .route("/api/v1/secured/pre-book/create")
+    .route("/api/v1/public/prebook-hash")
     .post(validate(preOderSchema), createPreBook);
 
   app
