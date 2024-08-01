@@ -132,7 +132,7 @@ const stripeWebHook = async (req, res, next) => {
     const orderFinishData = JSON.stringify({
       return_path:
         updateOrder?.payment_type === "now"
-          ? `api.worldota.net?order_id=${updateOrder?.order_id}`
+          ? `api.travelmeester.nl?order_id=${updateOrder?.order_id}`
           : null,
       user: {
         email: session.customer_details.email,
