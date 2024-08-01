@@ -132,7 +132,7 @@ const stripeWebHook = async (req, res, next) => {
     const orderFinishData = JSON.stringify({
       return_path:
         updateOrder?.payment_type === "now"
-          ? `api.travelmeester.nl?order_id=${updateOrder?.order_id}`
+          ? `api.travelmeester.nl/api/v1/rate-hawk/webhook?order_id=${updateOrder?.order_id}`
           : null,
       user: {
         email: session.customer_details.email,
@@ -160,7 +160,6 @@ const stripeWebHook = async (req, res, next) => {
           updateOrder?.payment_type === "now" ? updateOrder?.pay_uuid : null,
         init_uuid:
           updateOrder?.payment_type === "now" ? updateOrder?.init_uuid : null,
-        // type: updateOrder?.choose_room?.payment_options?.payment_types[0]?.type,
       },
     });
 
