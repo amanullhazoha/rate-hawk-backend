@@ -120,6 +120,8 @@ const stripeWebHook = async (req, res, next) => {
       order_id: session.metadata.order_id,
     });
 
+    if (!updateOrder) throw badRequest("Order not found!");
+
     if (updateOrder) {
       updateOrder.status = "Paid";
 
