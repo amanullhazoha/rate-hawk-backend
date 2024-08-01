@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { v4 } = require("uuid");
 const Hotel = require("./hotel.model");
 const Order = require("./Order.model");
 const { badRequest } = require("../../config/lib/error");
@@ -300,6 +301,8 @@ const createOrder = async (req, res, next) => {
       currency_code: currency,
       choose_room: choose_room,
       order_id: data?.data?.data?.order_id,
+      pay_uuid: payment_type?.type === "now" ? v4() : "",
+      init_uuid: payment_type?.type === "now" ? v4() : "",
       payment_type: payment_type ? payment_type?.type : "deposit",
     });
 

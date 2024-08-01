@@ -95,6 +95,12 @@ const OrderSchema = new Schema(
       type: Object,
       required: true,
     },
+    pay_uuid: {
+      type: String,
+    },
+    init_uuid: {
+      type: String,
+    },
   },
   {
     timestamps: true,
