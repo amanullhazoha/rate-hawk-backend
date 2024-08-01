@@ -23,7 +23,7 @@ const { paymentCreateSchema } = require(path.join(
 module.exports = (app) => {
   app
     .route("/api/v1/secured/stripe/payment")
-    .post(UserStrategy, validate(paymentCreateSchema), stripePaymentIntent);
+    .post(UserStrategy, stripePaymentIntent);
 
   app
     .route("/api/v1/secured/transaction-history")
