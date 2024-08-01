@@ -38,8 +38,6 @@ const stripePaymentIntent = async (req, res, next) => {
 
     if (!user) throw badRequest("User not exist!");
 
-    // console.log(req.body);
-
     const product = {
       created_by: user_id,
       name: req.body.hotel_name,

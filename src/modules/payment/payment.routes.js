@@ -15,11 +15,15 @@ const { stripePaymentIntent, getAllTransaction } = require(path.join(
   process.cwd(),
   "src/modules/payment/payment.controller",
 ));
+const { paymentCreateSchema } = require(path.join(
+  process.cwd(),
+  "src/modules/payment/payment.schema",
+));
 
 module.exports = (app) => {
   app
     .route("/api/v1/secured/stripe/payment")
-    .post(UserStrategy, stripePaymentIntent);
+    .post(UserStrategy, validate(paymentCreateSchema), stripePaymentIntent);
 
   app
     .route("/api/v1/secured/transaction-history")
