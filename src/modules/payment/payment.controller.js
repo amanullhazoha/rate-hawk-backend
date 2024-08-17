@@ -12,8 +12,6 @@ const encodedCredentials = btoa(`${username}:${password}`);
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const orderFinish = async (payload) => {
-  console.log(payload);
-
   const data = await axios.post(
     "https://api.worldota.net/api/b2b/v3/hotel/order/booking/finish/",
     payload,
@@ -114,7 +112,7 @@ const stripeWebHook = async (req, res, next) => {
     const transactionData = await transaction.save();
 
     const updateOrder = await Order.findOne({
-      status: "Pending",
+      status: "pending",
       order_id: session.metadata.order_id,
     });
 
@@ -122,12 +120,10 @@ const stripeWebHook = async (req, res, next) => {
       return res.status(400).json({ message: "Order not found!" });
 
     if (updateOrder) {
-      updateOrder.status = "Paid";
+      updateOrder.status = "paid";
 
       await updateOrder.save();
     }
-
-    console.log(updateOrder?.payment_type);
 
     const orderFinishData = JSON.stringify({
       return_path:
@@ -165,10 +161,12 @@ const stripeWebHook = async (req, res, next) => {
 
     const data = await orderFinish(orderFinishData);
 
-    // if (data?.data?.status === "error") throw badRequest(data?.data?.error);
-
     if (data?.data?.status === "error")
       return res.status(400).json({ message: data?.data?.error });
+
+    updateOrder.status = "completed";
+
+    await updateOrder.save();
 
     return res.status(200).json({ message: "Payment is Successfully!" });
     // nodeMailer(template.subscription(user.email, user.name));

@@ -27,7 +27,7 @@ const {
   createUserOrder,
   hotelSearchByRegion,
   hotelSearchByHotelId,
-
+  orderCancel,
   getAllOrder,
   getOrderByOrderId,
   getAllOrderByUserId,
@@ -61,6 +61,8 @@ module.exports = (app) => {
     .post(UserStrategy, validate(oderSchema), createOrder);
 
   app.route("/api/v1/secured/order/finish").post(UserStrategy, orderFinish);
+
+  app.route("/api/v1/secured/order/cancel").post(UserStrategy, orderCancel);
 
   app.route("/api/v1/secured/order/info").post(UserStrategy, orderInfo);
 

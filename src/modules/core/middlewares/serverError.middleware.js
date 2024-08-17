@@ -5,8 +5,6 @@ const { API_response } = require(path.join(
 ));
 
 const serverError = (error, req, res, next) => {
-  console.log(error);
-
   const response = API_response({
     status: 500,
     message: error?.message ? error?.message : "Internal server error.",

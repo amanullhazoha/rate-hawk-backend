@@ -43,44 +43,68 @@ const downloadDumpData = async (req, res, next) => {
   }
 };
 
+// const uploadDumpData = async (req, res, next) => {
+//   try {
+//     upload(req, res, async function (err) {
+//       if (err instanceof multer.MulterError) {
+//         return res.status(400).send({ error: err.message });
+//       } else if (err) {
+//         return res.status(500).send({ error: "Something went wrong" });
+//       }
+
+//       if (!req.file) {
+//         return res.status(400).send({ error: "No file uploaded" });
+//       }
+
+//       const filePath = req.file.path;
+
+//       try {
+//         const fileContent = fs.readFileSync(filePath, "utf8");
+
+//         const jsonData = JSON.parse(fileContent);
+
+//         const dumpData = await HotelDump.insertMany(jsonData);
+
+//         fs.unlinkSync(filePath);
+
+//         const response = {
+//           code: 200,
+//           message: "Hotel dump data uploaded successfully",
+//           data: { message: "Data upload done." },
+//           links: {
+//             self: req.url,
+//           },
+//         };
+
+//         res.status(200).send(response);
+//       } catch (parseError) {
+//         return res.status(400).send({ error: "Invalid JSON format" });
+//       }
+//     });
+//   } catch (error) {
+//     console.log(error);
+
+//     next(error);
+//   }
+// };
+
 const uploadDumpData = async (req, res, next) => {
   try {
-    upload(req, res, async function (err) {
-      if (err instanceof multer.MulterError) {
-        return res.status(400).send({ error: err.message });
-      } else if (err) {
-        return res.status(500).send({ error: "Something went wrong" });
-      }
+    const { hotels } = req.body;
+    console.log(req.body.hotels);
 
-      if (!req.file) {
-        return res.status(400).send({ error: "No file uploaded" });
-      }
+    const dumpData = await HotelDump.insertMany(hotels);
 
-      const filePath = req.file.path;
+    const response = {
+      code: 200,
+      message: "Hotel dump data uploaded successfully",
+      data: { message: "Data upload done." },
+      links: {
+        self: req.url,
+      },
+    };
 
-      try {
-        const fileContent = fs.readFileSync(filePath, "utf8");
-
-        const jsonData = JSON.parse(fileContent);
-
-        const dumpData = await HotelDump.insertMany(jsonData);
-
-        fs.unlinkSync(filePath);
-
-        const response = {
-          code: 200,
-          message: "Hotel dump data uploaded successfully",
-          data: { message: "Data upload done." },
-          links: {
-            self: req.url,
-          },
-        };
-
-        res.status(200).send(response);
-      } catch (parseError) {
-        return res.status(400).send({ error: "Invalid JSON format" });
-      }
-    });
+    res.status(200).send(response);
   } catch (error) {
     console.log(error);
 

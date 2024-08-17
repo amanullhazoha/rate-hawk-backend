@@ -224,7 +224,7 @@ const getHotelHashID = async (req, res, next) => {
 
     res.status(200).send(response);
   } catch (error) {
-    console.log(error);
+    console.log(error, "hi");
 
     next(error);
   }
@@ -294,7 +294,7 @@ const createOrder = async (req, res, next) => {
       guests: adults,
       price_per_night,
       partner_order_id,
-      status: "Pending",
+      status: "pending",
       images: room.images,
       rg_ext: room?.rg_ext,
       room_name: room?.name,
@@ -393,6 +393,51 @@ const orderFinish = async (req, res, next) => {
     );
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+
+    const response = {
+      code: 200,
+      message: "Hotel search successfully",
+      data: data.data,
+      links: {
+        self: req.url,
+      },
+    };
+
+    res.status(200).send(response);
+  } catch (error) {
+    console.log(error);
+
+    next(error);
+  }
+};
+
+const orderCancel = async (req, res, next) => {
+  try {
+    const partner_order_id = req.body.partner_order_id;
+
+    const order = await Order.findOne({
+      status: "completed",
+      partner_order_id,
+    });
+
+    if (!order) throw badRequest("Order not found by partner order ID.");
+
+    const data = await axios.post(
+      "https://api.worldota.net/api/b2b/v3/hotel/order/cancel/",
+      { partner_order_id },
+      {
+        headers: {
+          Authorization: `Basic ${encodedCredentials}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (data?.data?.status === "error") throw badRequest(data?.data?.error);
+
+    order.status = "cancelled";
+
+    await order.save();
 
     const response = {
       code: 200,
@@ -575,7 +620,7 @@ module.exports = {
   getAllOrder,
   getOrderByOrderId,
   getAllOrderByUserId,
-
+  orderCancel,
   orderInfo,
   hotelInfo,
   orderFinish,
