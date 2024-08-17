@@ -144,7 +144,7 @@ const stripeWebHook = async (req, res, next) => {
       language: "en",
       rooms: [
         {
-          guests: session?.metadata?.guestsName,
+          guests: JSON.parse(session?.metadata?.guestsName),
         },
       ],
       payment_type: {
