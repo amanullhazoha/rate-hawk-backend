@@ -12,6 +12,8 @@ const encodedCredentials = btoa(`${username}:${password}`);
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const orderFinish = async (payload) => {
+  console.log(payload);
+
   const data = await axios.post(
     "https://api.worldota.net/api/b2b/v3/hotel/order/booking/finish/",
     payload,
@@ -93,6 +95,8 @@ const stripeWebHook = async (req, res, next) => {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
+
+    console.log(session);
 
     const transaction = new Transaction({
       payment_id: session.id,
