@@ -96,8 +96,6 @@ const stripeWebHook = async (req, res, next) => {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
 
-    console.log(session);
-
     const transaction = new Transaction({
       payment_id: session.id,
       status: session.status,
@@ -129,6 +127,8 @@ const stripeWebHook = async (req, res, next) => {
       await updateOrder.save();
     }
 
+    console.log(updateOrder);
+
     const orderFinishData = JSON.stringify({
       return_path:
         updateOrder?.payment_type === "now"
@@ -144,12 +144,7 @@ const stripeWebHook = async (req, res, next) => {
       language: "en",
       rooms: [
         {
-          guests: [
-            {
-              first_name: "Marty",
-              last_name: "Ratehawk",
-            },
-          ],
+          guests: session?.metadata?.guestsName,
         },
       ],
       payment_type: {
