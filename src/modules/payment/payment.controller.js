@@ -161,8 +161,14 @@ const stripeWebHook = async (req, res, next) => {
 
     const data = await orderFinish(orderFinishData);
 
-    if (data?.data?.status === "error")
+    if (data?.data?.status === "error") {
+      updateOrder.status = "failed";
+      updateOrder.error = data?.data?.error;
+
+      await updateOrder.save();
+
       return res.status(400).json({ message: data?.data?.error });
+    }
 
     updateOrder.status = "completed";
 

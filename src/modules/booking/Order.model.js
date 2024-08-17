@@ -101,6 +101,9 @@ const OrderSchema = new Schema(
     init_uuid: {
       type: String,
     },
+    error: {
+      type: String,
+    },
   },
   {
     timestamps: true,
