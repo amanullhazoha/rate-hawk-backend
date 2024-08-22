@@ -3,6 +3,7 @@ const { v4 } = require("uuid");
 const Hotel = require("./hotel.model");
 const Order = require("./Order.model");
 const { badRequest } = require("../../config/lib/error");
+const { getIpAddress } = require("../../config/utilities");
 
 const username = process.env.RATE_HAWK_USER_NAME;
 const password = process.env.RATE_HAWK_PASSWORD;
@@ -233,13 +234,18 @@ const getHotelHashID = async (req, res, next) => {
 const createOrder = async (req, res, next) => {
   try {
     const user_id = req.user._id;
+    const ip = getIpAddress(req);
+
+    console.log(ip, "ip");
 
     const {
       room,
       kind,
       adults,
+      user_ip,
       hotel_id,
       currency,
+      book_hash,
       region_id,
       residency,
       check_in,
@@ -253,12 +259,18 @@ const createOrder = async (req, res, next) => {
       total_night,
       total_amount,
       price_per_night,
+      total_commission,
       partner_order_id,
     } = req.body;
 
     const data = await axios.post(
       "https://api.worldota.net/api/b2b/v3/hotel/order/booking/form/",
-      req.body,
+      {
+        user_ip,
+        language,
+        book_hash,
+        partner_order_id,
+      },
       {
         headers: {
           Authorization: `Basic ${encodedCredentials}`,
@@ -272,8 +284,6 @@ const createOrder = async (req, res, next) => {
     const payment_type = data?.data?.data?.payment_types?.find(
       (item) => item.currency_code === currency,
     );
-
-    console.log(payment_type);
 
     const order = new Order({
       kind,
@@ -294,6 +304,7 @@ const createOrder = async (req, res, next) => {
       guests: adults,
       price_per_night,
       partner_order_id,
+      total_commission,
       status: "pending",
       images: room.images,
       rg_ext: room?.rg_ext,
@@ -308,11 +319,9 @@ const createOrder = async (req, res, next) => {
 
     const orderData = await order.save();
 
-    console.log(orderData);
-
     const response = {
       code: 200,
-      message: "Hotel search successfully",
+      message: "Order create successfully",
       data: data.data,
       links: {
         self: req.url,

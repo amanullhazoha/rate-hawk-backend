@@ -19,6 +19,10 @@ const OrderSchema = new Schema(
       type: String,
       required: true,
     },
+    total_commission: {
+      type: String,
+      required: true,
+    },
     total_night: {
       type: String,
       required: true,
