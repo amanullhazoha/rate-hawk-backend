@@ -59,8 +59,12 @@ const OrderSchema = new Schema(
       type: String,
       required: true,
     },
+    // payment_type: {
+    //   type: String,
+    //   required: true,
+    // },
     payment_type: {
-      type: String,
+      type: Object,
       required: true,
     },
     images: {

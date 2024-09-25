@@ -281,9 +281,13 @@ const createOrder = async (req, res, next) => {
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
 
+    console.log(data?.data?.data?.payment_types);
+
     const payment_type = data?.data?.data?.payment_types?.find(
-      (item) => item.currency_code === currency,
+      (item) => item.type === "deposit",
     );
+
+    console.log(payment_type, "type")
 
     const order = new Order({
       kind,
@@ -314,7 +318,8 @@ const createOrder = async (req, res, next) => {
       order_id: data?.data?.data?.order_id,
       pay_uuid: payment_type?.type === "now" ? v4() : "",
       init_uuid: payment_type?.type === "now" ? v4() : "",
-      payment_type: payment_type ? payment_type?.type : "deposit",
+      // payment_type: payment_type ? payment_type?.type : "deposit",
+      payment_type: payment_type ? payment_type : {},
     });
 
     const orderData = await order.save();

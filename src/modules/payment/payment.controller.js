@@ -150,8 +150,8 @@ const stripeWebHook = async (req, res, next) => {
       payment_type: {
         // type: updateOrder?.payment_type,
         type: "deposit",
-        amount: updateOrder?.total_amount,
-        currency_code: updateOrder?.currency_code,
+        amount: updateOrder?.payment_type?.amount,
+        currency_code: updateOrder?.payment_type?.currency_code,
         // pay_uuid:
         //   updateOrder?.payment_type === "now" ? updateOrder?.pay_uuid : null,
         // init_uuid:
