@@ -1,6 +1,8 @@
 const fs = require("fs");
+const path = require("path");
 const axios = require("axios");
 const multer = require("multer");
+const AdmZip = require("adm-zip");
 const HotelDump = require("./dumpData.model");
 
 const username = process.env.RATE_HAWK_USER_NAME;
@@ -23,7 +25,7 @@ const downloadDumpData = async (req, res, next) => {
           Authorization: `Basic ${encodedCredentials}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     const response = {
@@ -191,9 +193,85 @@ const getAllHotelList = async (req, res, next) => {
   }
 };
 
+const downloadDumpIncrementalData = async (req, res, next) => {
+  try {
+    const data = await axios.post(
+      "https://api.worldota.net/api/b2b/v3/hotel/info/incremental_dump/",
+      {
+        language: "en",
+      },
+      {
+        headers: {
+          Authorization: `Basic ${encodedCredentials}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const response = {
+      code: 200,
+      message: "Multi Complete successfully",
+      data: data.data,
+      links: {
+        self: req.url,
+      },
+    };
+
+    console.log(response);
+
+    // Now make a request to download the file from the extracted URL
+    const response2 = await axios({
+      method: "get",
+      url: data?.data?.data?.url,
+      responseType: "stream", // Important to get the file as a stream
+    });
+
+    console.log("downloading file");
+
+    // Create a write stream to save the file in the 'dumps' folder
+    const filePath = path.join(
+      process.cwd(),
+      "uploads",
+      `incremental_dump_${Date.now()}.json.zst`
+    );
+    const writer = fs.createWriteStream(filePath);
+
+    // Pipe the response stream to the file
+    response2.data.pipe(writer);
+
+    // Handle successful file write
+    writer.on("finish", async () => {
+      console.log("File downloaded and saved successfully:", filePath);
+
+      const zip = new AdmZip(filePath);
+
+      zip.extractAllTo(path.join(process.cwd(), "uploads"), true);
+
+      // const decompressedFilePath = zstdFilePath.replace(".zstd", ".json"); // Save as a .json file
+      // const zstdFileBuffer = fs.readFileSync(zstdFilePath); // Read the compressed file
+      // const decompressedBuffer = await zstd.decompress(zstdFileBuffer); // Decompress the file
+
+      // // Step 5: Save the decompressed content as a new file
+      // fs.writeFileSync(decompressedFilePath, decompressedBuffer);
+    });
+
+    // Handle file write errors
+    writer.on("error", (err) => {
+      console.error("Error writing file:", err);
+    });
+
+    // res.status(200).send(response);
+  } catch (error) {
+    console.log(error);
+
+    // next(error);
+  }
+};
+
 module.exports = {
   DeleteDumpData,
   uploadDumpData,
   downloadDumpData,
   getAllHotelList,
+  downloadDumpIncrementalData,
 };

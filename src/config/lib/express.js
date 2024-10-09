@@ -1,15 +1,19 @@
 const path = require("path");
 const cors = require("cors");
+const cron = require("node-cron");
 const express = require("express");
 const session = require("express-session");
 const connectDB = require("../db/index");
 const { stripeWebHook } = require("../../modules/payment/payment.controller");
+const {
+  downloadDumpIncrementalData,
+} = require("../../modules/dumpData/dumpData.controller");
 
 const cookieParser = require("cookie-parser");
 const config = require(path.join(process.cwd(), "src/config"));
 const serverError = require(path.join(
   process.cwd(),
-  "src/modules/core/middlewares/serverError.middleware",
+  "src/modules/core/middlewares/serverError.middleware"
 ));
 
 module.exports = async () => {
@@ -20,12 +24,11 @@ module.exports = async () => {
   app.post(
     "/webhook",
     express.raw({ type: "application/json" }),
-    stripeWebHook,
+    stripeWebHook
   );
 
   const allowedOrigins = process.env.FRONTEND_BASE_URL.split(",");
 
-  console.log(allowedOrigins);
   const corsOptions = {
     origin: (origin, callback) => {
       if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
@@ -59,8 +62,18 @@ module.exports = async () => {
       resave: false,
       saveUninitialized: true,
       cookie: { secure: false },
-    }),
+    })
   );
+
+  cron.schedule("0 0 * * *", async () => {
+    // cron.schedule("* * * * *", async () => {
+    console.log("Running scheduled task: downloading incremental dump data.");
+    await downloadDumpIncrementalData(
+      { url: "/incremental-dump" },
+      { status: (code) => ({ json: console.log }) },
+      console.error
+    );
+  });
 
   const globalConfig = config.getGlobalConfig();
 

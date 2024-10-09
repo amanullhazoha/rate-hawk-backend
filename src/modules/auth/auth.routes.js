@@ -56,10 +56,7 @@ module.exports = (app) => {
 
   app.get(
     "/api/v1/public/facebook-login",
-    passport.authenticate("facebook", {
-      access_type: "offline",
-      scope: ["profile", "email"],
-    }),
+    passport.authenticate("facebook"),
     (req, res) => {
       res.status(200).send("User facebook login successfully");
     },

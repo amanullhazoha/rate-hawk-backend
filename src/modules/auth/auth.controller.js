@@ -32,7 +32,7 @@ const userLogin = async (req, res, next) => {
       signed: true,
       secure: true,
       sameSite: "None",
-      domain: process.env.FRONTEND_DOMAIN,
+      // domain: process.env.FRONTEND_DOMAIN,
     });
 
     res.status(200).send({
@@ -59,7 +59,7 @@ const userSignUp = async (req, res, next) => {
         API_response({
           status: 400,
           message: "User already exist by email.",
-        }),
+        })
       );
 
     // const isExistByUserName = await User.findOne({ user_name });
@@ -161,11 +161,7 @@ const forgotPassword = async (req, res, next) => {
     const createdVerifyToken = await verifyToken.save();
 
     nodemailer(
-      forgotPasswordTemplate(
-        user.email,
-        user.user_name,
-        createdVerifyToken._id,
-      ),
+      forgotPasswordTemplate(user.email, user.user_name, createdVerifyToken._id)
     );
 
     res.status(200).json({

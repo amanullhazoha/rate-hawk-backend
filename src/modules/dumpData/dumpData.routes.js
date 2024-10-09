@@ -1,24 +1,25 @@
 const path = require("path");
 const validate = require(path.join(
   process.cwd(),
-  "src/modules/core/middlewares/validate.middleware",
+  "src/modules/core/middlewares/validate.middleware"
 ));
 const UserStrategy = require(path.join(
   process.cwd(),
-  "src/modules/core/middlewares/authenticate",
+  "src/modules/core/middlewares/authenticate"
 ));
 const authorize = require(path.join(
   process.cwd(),
-  "src/modules/core/middlewares/authorize",
+  "src/modules/core/middlewares/authorize"
 ));
 const {
   DeleteDumpData,
   uploadDumpData,
   getAllHotelList,
   downloadDumpData,
+  downloadDumpIncrementalData,
 } = require(path.join(
   process.cwd(),
-  "src/modules/dumpData/dumpData.controller",
+  "src/modules/dumpData/dumpData.controller"
 ));
 
 module.exports = (app) => {
@@ -36,5 +37,5 @@ module.exports = (app) => {
 
   app.route("/api/v1/public/dump-hotel").get(getAllHotelList);
 
-  // app.route("/api/v1/public/dump-hotel/:id").post(downloadDumpData);
+  app.route("/").get(downloadDumpIncrementalData);
 };
