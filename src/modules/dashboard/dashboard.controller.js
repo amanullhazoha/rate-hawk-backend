@@ -10,7 +10,7 @@ const getAdminDashboard = async (req, res, next) => {
     const total_hotel = await HotelDump.countDocuments();
     const total_transaction = await Transaction.countDocuments();
 
-    const hotels = await HotelDump.find().sort({ _id: -1 }).limit(10).exec();
+    const hotels = await HotelDump.find().sort({ _id: 1 }).limit(10).exec();
 
     const response = {
       code: 200,
