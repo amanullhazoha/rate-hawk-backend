@@ -30,7 +30,7 @@ const getHotelData = async (req, res, next) => {
                 Authorization: `Basic ${encodedCredentials}`,
                 "Content-Type": "application/json",
               },
-            },
+            }
           );
 
           const getHotel = data.data.data;
@@ -53,7 +53,7 @@ const getHotelData = async (req, res, next) => {
             return hotelData;
           }
         }
-      }),
+      })
     );
 
     const response = {
@@ -83,7 +83,7 @@ const multiComplete = async (req, res, next) => {
           Authorization: `Basic ${encodedCredentials}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     const response = {
@@ -113,7 +113,7 @@ const hotelSearchByRegion = async (req, res, next) => {
           Authorization: `Basic ${encodedCredentials}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
@@ -145,7 +145,7 @@ const hotelSearchByHotelId = async (req, res, next) => {
           Authorization: `Basic ${encodedCredentials}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
@@ -177,7 +177,7 @@ const hotelInfo = async (req, res, next) => {
           Authorization: `Basic ${encodedCredentials}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
@@ -209,7 +209,7 @@ const getHotelHashID = async (req, res, next) => {
           Authorization: `Basic ${encodedCredentials}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
@@ -235,8 +235,6 @@ const createOrder = async (req, res, next) => {
   try {
     const user_id = req.user._id;
     const ip = getIpAddress(req);
-
-    console.log(ip, "ip");
 
     const {
       room,
@@ -276,18 +274,14 @@ const createOrder = async (req, res, next) => {
           Authorization: `Basic ${encodedCredentials}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
 
-    console.log(data?.data?.data?.payment_types);
-
     const payment_type = data?.data?.data?.payment_types?.find(
-      (item) => item.type === "deposit",
+      (item) => item.type === "deposit"
     );
-
-    console.log(payment_type, "type")
 
     const order = new Order({
       kind,
@@ -403,7 +397,7 @@ const orderFinish = async (req, res, next) => {
           Authorization: `Basic ${encodedCredentials}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
@@ -444,7 +438,7 @@ const orderCancel = async (req, res, next) => {
           Authorization: `Basic ${encodedCredentials}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
@@ -480,7 +474,7 @@ const orderInfo = async (req, res, next) => {
           Authorization: `Basic ${encodedCredentials}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);
@@ -512,7 +506,7 @@ const createPreBook = async (req, res, next) => {
           Authorization: `Basic ${encodedCredentials}`,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     if (data?.data?.status === "error") throw badRequest(data?.data?.error);

@@ -25,19 +25,12 @@ const createUserSchema = object().shape({
 
 const updaterUserSchema = object().shape({
   user_name: string().required("User name is required."),
-  gender: string()
-    .oneOf(["male", "female"])
-    .required("User gender is required."),
-  address: string()
-    .min(5, "Address at least 5 character.")
-    .max(200, "Address at most 200 character.")
-    .required("User password is required."),
+  gender: string(),
+  password: string(),
+  address: string().max(200, "Address at most 200 character."),
   phone: string(),
   bath_date: string(),
-  about_you: string()
-    .min(5, "About at least 5 character.")
-    .max(500, "About at most 500 character.")
-    .required("About is required."),
+  about_you: string().max(500, "About at most 500 character."),
   role: string().oneOf(["admin", "user"]).required("Role is required."),
 });
 
@@ -48,19 +41,15 @@ const changePasswordSchema = object().shape({
 
 const updateLoggedInUserSchema = object().shape({
   user_name: string().required("User name is required."),
-  gender: string()
-    .oneOf(["male", "female"])
-    .required("User gender is required."),
+  gender: string().oneOf(["male", "female"]),
   address: string()
     .min(5, "Address at least 5 character.")
-    .max(200, "Address at most 200 character.")
-    .required("Address is required."),
+    .max(200, "Address at most 200 character."),
   phone: string(),
   bath_date: string(),
   about_you: string()
     .min(5, "About at least 5 character.")
-    .max(500, "About at most 500 character.")
-    .required("About is required."),
+    .max(500, "About at most 500 character."),
 });
 
 module.exports = {

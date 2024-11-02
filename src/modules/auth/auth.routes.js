@@ -9,6 +9,7 @@ const {
 const {
   userLogin,
   userSignUp,
+  adminLogin,
   resetPassword,
   forgotPassword,
   userEmailVerify,
@@ -18,19 +19,20 @@ const {
 
 module.exports = (app) => {
   app.post("/api/v1/public/login", validate(userLoginSchema), userLogin);
+  app.post("/api/v1/public/admin-login", validate(userLoginSchema), adminLogin);
 
   app.post("/api/v1/public/signup", validate(userSignupSchema), userSignUp);
 
   app.post(
     "/api/v1/public/forgot-password",
     validate(forgotPasswordSchema),
-    forgotPassword,
+    forgotPassword
   );
 
   app.post(
     "/api/v1/public/reset-password",
     validate(resetPasswordSchema),
-    resetPassword,
+    resetPassword
   );
 
   app.get("/api/v1/public/email-verify", userEmailVerify);
@@ -43,7 +45,7 @@ module.exports = (app) => {
     }),
     (req, res) => {
       res.status(200).send("user google login successfully");
-    },
+    }
   );
 
   app.get(
@@ -51,7 +53,7 @@ module.exports = (app) => {
     passport.authenticate("google", {
       failureRedirect: process.env.GOOGLE_OAUTH_FAILURE_REDIRECT,
     }),
-    userGoogleLoginCallBack,
+    userGoogleLoginCallBack
   );
 
   app.get(
@@ -62,7 +64,7 @@ module.exports = (app) => {
     }),
     (req, res) => {
       res.status(200).send("User facebook login successfully");
-    },
+    }
   );
 
   app.get(
@@ -70,6 +72,6 @@ module.exports = (app) => {
     passport.authenticate("facebook", {
       failureRedirect: process.env.GOOGLE_OAUTH_FAILURE_REDIRECT,
     }),
-    userFacebookLoginCallBack,
+    userFacebookLoginCallBack
   );
 };

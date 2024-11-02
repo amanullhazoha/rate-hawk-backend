@@ -26,7 +26,6 @@ const userSchema = new Schema(
     },
     address: {
       type: String,
-      minLength: 5,
       maxLength: 200,
     },
     phone: String,
@@ -34,7 +33,6 @@ const userSchema = new Schema(
     is_agree: Boolean,
     about_you: {
       type: String,
-      minLength: 5,
       maxLength: 500,
     },
     role: {
@@ -51,7 +49,7 @@ const userSchema = new Schema(
   {
     timestamps: true,
     id: true,
-  },
+  }
 );
 
 const User = model("User", userSchema);

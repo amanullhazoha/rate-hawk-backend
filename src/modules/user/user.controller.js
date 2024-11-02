@@ -159,7 +159,7 @@ const getUserByID = async (req, res, next) => {
     const response = {
       code: 200,
       message: "User get by ID successfully",
-      data: user,
+      data: { ...user, password: "" },
       links: {
         self: req.url,
       },
@@ -232,8 +232,16 @@ const updateUserByID = async (req, res, next) => {
   try {
     const id = req.params.id;
 
-    const { role, phone, gender, address, about_you, user_name, bath_date } =
-      req.body;
+    const {
+      role,
+      phone,
+      gender,
+      address,
+      about_you,
+      user_name,
+      bath_date,
+      password,
+    } = req.body;
 
     const user = await User.findById(id);
 
@@ -248,6 +256,11 @@ const updateUserByID = async (req, res, next) => {
       bath_date,
       about_you,
     };
+
+    if (password) {
+      const hashedPassword = await hashPassword(password);
+      payload.password = hashedPassword;
+    }
 
     Object.keys(payload).forEach((key) => {
       user[key] = payload[key] ?? user[key];

@@ -1,15 +1,15 @@
 const path = require("path");
 const validate = require(path.join(
   process.cwd(),
-  "src/modules/core/middlewares/validate.middleware",
+  "src/modules/core/middlewares/validate.middleware"
 ));
 const UserStrategy = require(path.join(
   process.cwd(),
-  "src/modules/core/middlewares/authenticate",
+  "src/modules/core/middlewares/authenticate"
 ));
 const authorize = require(path.join(
   process.cwd(),
-  "src/modules/core/middlewares/authorize",
+  "src/modules/core/middlewares/authorize"
 ));
 const {
   createUserSchema,
@@ -46,7 +46,7 @@ module.exports = (app) => {
       UserStrategy,
       authorize(["admin"]),
       validate(createUserSchema),
-      createUser,
+      createUser
     );
 
   app
@@ -56,7 +56,7 @@ module.exports = (app) => {
       UserStrategy,
       authorize(["admin"]),
       validate(updaterUserSchema),
-      updateUserByID,
+      updateUserByID
     )
     .delete(UserStrategy, authorize(["admin"]), deleteUserByID);
 

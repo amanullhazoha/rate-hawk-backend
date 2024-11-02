@@ -32,7 +32,44 @@ const userLogin = async (req, res, next) => {
       signed: true,
       secure: true,
       sameSite: "None",
-      domain: process.env.FRONTEND_DOMAIN,
+      // domain: process.env.FRONTEND_DOMAIN,
+    });
+
+    res.status(200).send({
+      access_token,
+      userID: user.id,
+    });
+
+    // res.status(200).send("User login successfully");
+  } catch (error) {
+    console.log(error);
+
+    next(error);
+  }
+};
+
+const adminLogin = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) throw badRequest("Invalid credentials.");
+
+    if (user.role !== "admin") throw badRequest("Invalid role.");
+
+    const match = await comparePassword(password, user.password);
+
+    if (!match) throw badRequest("Invalid credentials.");
+
+    const access_token = generateAccessToken(user);
+
+    res.cookie("access_token", access_token, {
+      httpOnly: true,
+      signed: true,
+      secure: true,
+      sameSite: "None",
+      // domain: process.env.FRONTEND_DOMAIN,
     });
 
     res.status(200).send({
@@ -277,6 +314,7 @@ const userFacebookLoginCallBack = async (req, res, next) => {
 module.exports = {
   userLogin,
   userSignUp,
+  adminLogin,
   resetPassword,
   forgotPassword,
   userEmailVerify,
