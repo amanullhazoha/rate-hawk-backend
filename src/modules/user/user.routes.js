@@ -12,9 +12,9 @@ const authorize = require(path.join(
   "src/modules/core/middlewares/authorize"
 ));
 const {
-  createUserSchema,
   updaterUserSchema,
   changePasswordSchema,
+  createUserByAdminSchema,
   updateLoggedInUserSchema,
 } = require(path.join(process.cwd(), "src/modules/user/user.schema"));
 const {
@@ -45,7 +45,7 @@ module.exports = (app) => {
     .post(
       UserStrategy,
       authorize(["admin"]),
-      validate(createUserSchema),
+      validate(createUserByAdminSchema),
       createUser
     );
 

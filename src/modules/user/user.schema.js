@@ -1,6 +1,6 @@
 const { object, string, array } = require("yup");
 
-const createUserSchema = object().shape({
+const createUserByAdminSchema = object().shape({
   user_name: string().required("User name is required."),
   email: string()
     .min(3, "Email at least 3 character.")
@@ -11,15 +11,10 @@ const createUserSchema = object().shape({
     .max(100, "Password at most 100 character.")
     .required("User password is required."),
   gender: string().required("User gender is required."),
-  address: string()
-    .min(5, "Address at least 5 character.")
-    .max(200, "Address at most 200 character.")
-    .required("User password is required."),
+  address: string().max(200, "Address at most 200 character."),
   phone: string(),
   bath_date: string(),
-  about_you: string()
-    .min(5, "About at least 5 character.")
-    .max(500, "About at most 500 character."),
+  about_you: string().max(500, "About at most 500 character."),
   role: string().oneOf(["admin", "user"]).required("Role is required."),
 });
 
@@ -53,8 +48,8 @@ const updateLoggedInUserSchema = object().shape({
 });
 
 module.exports = {
-  createUserSchema,
   updaterUserSchema,
   changePasswordSchema,
+  createUserByAdminSchema,
   updateLoggedInUserSchema,
 };
