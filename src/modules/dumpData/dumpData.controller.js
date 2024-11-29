@@ -15,7 +15,7 @@ const downloadDumpData = async (req, res, next) => {
     const data = await axios.post(
       "https://api.worldota.net/api/b2b/v3/hotel/info/dump/",
       {
-        inventory: "all",
+        inventory: "direct_fast",
         language: "en",
       },
       {
@@ -197,7 +197,7 @@ const getHotelByRegionId = async (req, res, next) => {
   const residency = req?.query?.residency;
   const hotels_limit = req?.query?.hotels_limit
     ? req?.query?.hotels_limit
-    : 1000;
+    : 500;
   const adults = req?.query?.adults ? req?.query?.adults : 2;
   const currency = req?.query?.currency ? req?.query?.currency : "USD";
   const children = req?.query?.children ? req.query.children.split(",") : [];
