@@ -9,6 +9,10 @@ const password = process.env.RATE_HAWK_PASSWORD;
 
 const encodedCredentials = btoa(`${username}:${password}`);
 
+const mollieClient = require("@mollie/api-client")({
+  apiKey: "YOUR_API_KEY",
+});
+
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const orderFinish = async (payload) => {
@@ -22,7 +26,7 @@ const orderFinish = async (payload) => {
         Authorization: `Basic ${encodedCredentials}`,
         "Content-Type": "application/json",
       },
-    },
+    }
   );
 
   console.log(data?.data, "order finish");
@@ -179,6 +183,143 @@ const stripeWebHook = async (req, res, next) => {
   }
 };
 
+const molliePaymentInit = async (req, res, next) => {
+  try {
+    const user_id = req.user.id;
+
+    const user = await User.findById(user_id);
+
+    if (!user) throw badRequest("User not exist!");
+
+    const product = {
+      created_by: user_id,
+      name: req.body.hotel_name,
+      amount: req.body.total_amount,
+      description: req.body.hotel_name,
+      currency: req.body.currency,
+    };
+
+    const payment = await mollieClient.payments.create({
+      amount: {
+        value: product?.amount, // Payment amount (2 decimal places)
+        currency: product?.currency, // Currency code
+      },
+      description: product?.description,
+      redirectUrl: `${process.env.FRONTEND_BASE_URL}/success`,
+      webhookUrl: `${process.env.BACKEND_BASE_URL}/mollie/webhook`,
+      metadata: { created_by: product?.created_by, ...req.body },
+    });
+
+    console.log("Payment created:", payment);
+
+    return payment.getPaymentUrl();
+  } catch (error) {
+    console.log(error);
+
+    next(error);
+  }
+};
+
+const mollieWebHook = async (req, res, next) => {
+  const sig = req.headers["stripe-signature"];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    res.status(400).send(`Webhook Error: ${err.message}`);
+    console.log("Error", err.message);
+    return;
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+
+    const transaction = new Transaction({
+      payment_id: session.id,
+      status: session.status,
+      currency: session.currency,
+      invoice_id: session.invoice,
+      customer_id: session.customer,
+      amount: session.amount_total / 100,
+      order_id: session.metadata.order_id,
+      subscription_id: session.subscription,
+      payment_status: session.payment_status,
+      customer_name: session.customer_details.name,
+      customer_email: session.customer_details.email,
+      payment_method: session.payment_method_types[0],
+    });
+
+    const transactionData = await transaction.save();
+
+    const updateOrder = await Order.findOne({
+      status: "pending",
+      order_id: session.metadata.order_id,
+    });
+
+    if (!updateOrder)
+      return res.status(400).json({ message: "Order not found!" });
+
+    if (updateOrder) {
+      updateOrder.status = "paid";
+
+      await updateOrder.save();
+    }
+
+    console.log(updateOrder);
+
+    const orderFinishData = JSON.stringify({
+      // return_path:
+      //   updateOrder?.payment_type === "now"
+      //     ? `api.travelmeester.nl/api/v1/rate-hawk/webhook?order_id=${updateOrder?.order_id}`
+      //     : null,
+      user: {
+        email: session.customer_details.email,
+        phone: session.metadata.phone,
+      },
+      partner: {
+        partner_order_id: updateOrder?.partner_order_id,
+      },
+      language: "en",
+      rooms: [
+        {
+          guests: JSON.parse(session?.metadata?.guestsName),
+        },
+      ],
+      payment_type: {
+        // type: updateOrder?.payment_type,
+        type: "deposit",
+        amount: updateOrder?.payment_type?.amount,
+        currency_code: updateOrder?.payment_type?.currency_code,
+        // pay_uuid:
+        //   updateOrder?.payment_type === "now" ? updateOrder?.pay_uuid : null,
+        // init_uuid:
+        //   updateOrder?.payment_type === "now" ? updateOrder?.init_uuid : null,
+      },
+    });
+
+    const data = await orderFinish(orderFinishData);
+
+    if (data?.data?.status === "error") {
+      updateOrder.status = "failed";
+      updateOrder.error = data?.data?.error;
+
+      await updateOrder.save();
+
+      return res.status(400).json({ message: data?.data?.error });
+    }
+
+    updateOrder.status = "completed";
+
+    await updateOrder.save();
+
+    return res.status(200).json({ message: "Payment is Successfully!" });
+    // nodeMailer(template.subscription(user.email, user.name));
+  }
+};
+
 const getAllTransaction = async (req, res, next) => {
   try {
     const page = req.query.page ? req.query.page : 1;
@@ -215,6 +356,8 @@ const getAllTransaction = async (req, res, next) => {
 
 module.exports = {
   stripeWebHook,
+  mollieWebHook,
   getAllTransaction,
+  molliePaymentInit,
   stripePaymentIntent,
 };

@@ -3,13 +3,16 @@ const cors = require("cors");
 const express = require("express");
 const session = require("express-session");
 const connectDB = require("../db/index");
-const { stripeWebHook } = require("../../modules/payment/payment.controller");
+const {
+  stripeWebHook,
+  mollieWebHook,
+} = require("../../modules/payment/payment.controller");
 
 const cookieParser = require("cookie-parser");
 const config = require(path.join(process.cwd(), "src/config"));
 const serverError = require(path.join(
   process.cwd(),
-  "src/modules/core/middlewares/serverError.middleware",
+  "src/modules/core/middlewares/serverError.middleware"
 ));
 
 module.exports = async () => {
@@ -20,7 +23,12 @@ module.exports = async () => {
   app.post(
     "/webhook",
     express.raw({ type: "application/json" }),
-    stripeWebHook,
+    stripeWebHook
+  );
+  app.post(
+    "/mollie/webhook",
+    express.raw({ type: "application/json" }),
+    mollieWebHook
   );
 
   const allowedOrigins = process.env.FRONTEND_BASE_URL.split(",");
@@ -59,7 +67,7 @@ module.exports = async () => {
       resave: false,
       saveUninitialized: true,
       cookie: { secure: false },
-    }),
+    })
   );
 
   const globalConfig = config.getGlobalConfig();
